@@ -10,9 +10,8 @@ before_install:
     - git config user.email 'travis@nowhere.dne'
 
 install:
-    - cpanm --quiet --notest --skip-satisfied Dist::Zilla
+    - cpanm --quiet --notest --skip-satisfied Dist::Zilla Pod::Weaver::Plugin::Encoding
     - dzil authordeps | grep -vP '[^\w:]' | xargs -n 5 -P 10 cpanm --quiet --notest --skip-satisfied
-    - cpanm --quiet --notest --skip-satisified Pod::Weaver::Plugin::Encoding
     - dzil listdeps | grep -vP '[^\w:]' | cpanm --verbose --notest
 
 script:
