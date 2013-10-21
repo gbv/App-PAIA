@@ -4,6 +4,10 @@ use base 'App::PAIA::Command';
 use v5.14;
 #VERSION
 
+sub description {
+    "requests or renews an access_token from a PAIA auth server."
+}
+
 sub opt_spec {
     ["username:s"=>"username or -number for login"],
     ["password:s"=>"password for login"],
@@ -20,6 +24,8 @@ sub execute {
     );
 
     say $self->json($response);
+
+    $self->save_session;
 }
 
 1;

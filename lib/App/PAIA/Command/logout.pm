@@ -6,7 +6,13 @@ use v5.14;
 
 sub execute {
     my ($self, $opt, $args) = @_;
-    die "Not implemented yet!\n";
+
+    if (defined $self->session_file) {
+        $self->session;
+        unlink $self->session_file;
+    }
+
+    die "Not fully implemented yet!\n";
 }
 
 1;

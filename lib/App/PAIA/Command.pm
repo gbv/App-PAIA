@@ -7,7 +7,7 @@ use v5.14;
 use HTTP::Tiny 0.018; # core module 0.012 does not support verify_SSL
 use JSON::PP qw();    # core module
 
-# TODO: read from .paia_session file
+# TODO: respect values .paia_session file
 
 sub base { # get base URL
     my ($self) = @_;
@@ -29,13 +29,38 @@ sub core { # get core URL
 # get current patron identifier
 sub patron { $_[0]->{patron} }
 
-# TODO: merge with session variables
+# TODO: cleanup duplicated code
+sub config_file {
+    my ($self) = @_;
+    $self->app->global_options->config
+        // (-e 'paia.json' ? 'paia.json' : undef);
+}
 sub config {
     my ($self) = @_;
     $self->{config} //= do {
-        local (@ARGV, $/) = ($_ = $self->app->global_options->config); 
-        -e $_ ? $self->parse(<>,$_) : { };
+        my $file = $self->config_file;
+        local (@ARGV, $/) = $file;
+        defined $file ? $self->parse(<>,$file) : { };
     };
+}
+sub session_file {
+    my ($self) = @_;
+    $self->app->global_options->session
+        // (-e '.paia_session' ? '.paia_session' : undef);
+}
+sub session {
+    my ($self) = @_;
+    $self->{session} //= do {
+        my $file = $self->session_file;
+        local (@ARGV, $/) = $file;
+        defined $file ? $self->parse(<>,$file) : { };
+    };
+}
+
+sub save_session {
+    my ($self) = @_;
+    my $file = $self->session_file // '.paia_session';
+    say "saving session not implemented yet!";
 }
 
 sub agent {
