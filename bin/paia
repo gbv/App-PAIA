@@ -1,3 +1,26 @@
-#!perl
+#!/usr/bin/env perl
+##no critic
+#ABSTRACT: Patrons Account Information API command line client 
+#PODNAME: paia
+#VERSION
 use App::PAIA;
 App::PAIA->run;
+
+=head1 USAGE
+
+    paia --auth https://example.org/auth login --username alice --password 12345
+    paia patron
+    paia status
+    ...
+    paia logout
+
+=head1 DESCRIPTION
+
+This command line client can be used to access Patrons Account Information API
+(PAIA) servers. Call C<paia help> to list available commands and options.
+
+=head1 SEE ALSO
+
+The PAIA specification can be found at L<http://gbv.github.io/paia/>.
+
+=cut

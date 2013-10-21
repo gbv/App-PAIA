@@ -1,6 +1,8 @@
+#ABSTRACT: common base class of PAIA cli commands
 package App::PAIA::Command;
 use App::Cmd::Setup -command;
 use v5.14;
+#VERSION
 
 use HTTP::Tiny 0.018; # core module 0.012 does not support verify_SSL
 use JSON::PP qw();    # core module

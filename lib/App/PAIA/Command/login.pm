@@ -2,8 +2,7 @@
 package App::PAIA::Command::login;
 use base 'App::PAIA::Command';
 use v5.14;
-
-use Data::Dumper;
+#VERSION
 
 sub opt_spec {
     ["username:s"=>"username or -number for login"],

@@ -2,6 +2,7 @@
 package App::PAIA::Command::items;
 use base 'App::PAIA::Command';
 use v5.14;
+#VERSION
 
 sub execute {
     my ($self, $opt, $args) = @_;

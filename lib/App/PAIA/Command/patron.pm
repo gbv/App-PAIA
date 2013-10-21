@@ -2,6 +2,7 @@
 package App::PAIA::Command::patron;
 use base 'App::PAIA::Command';
 use v5.14;
+#VERSION
 
 sub opt_spec {
     ["username:s"=>"username or -number for login"],
