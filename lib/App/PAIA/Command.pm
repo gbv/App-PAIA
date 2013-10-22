@@ -1,122 +1,156 @@
-#ABSTRACT: common base class of PAIA cli commands
+#ABSTRACT: common base class of PAIA client commands
 package App::PAIA::Command;
 use App::Cmd::Setup -command;
 use v5.14;
 #VERSION
 
-use HTTP::Tiny 0.018; # core module 0.012 does not support verify_SSL
-use JSON::PP qw();    # core module
+use App::PAIA::Agent;
+use App::PAIA::JSON;
 
-# TODO: respect values .paia_session file
-
-sub base { # get base URL
-    my ($self) = @_;
-    $self->app->global_options->base // $self->config->{base};
+# get option from command line, session, or config file
+sub option { 
+    my ($self, $name) = @_;
+    $self->app->global_options->{$name} 
+        // $self->session->{$name} 
+        // $self->config->{$name};
 }
 
-sub auth { # get auth URL
+# get base URL
+sub base { $_[0]->option('base') }
+
+# get auth URL
+sub auth { 
     my ($self) = @_;
-    $self->app->global_options->auth // $self->config->{auth}
-        // ( $self->base ? $self->base . '/auth' : undef );
+    $_[0]->option('auth') // ( $self->base ? $self->base . '/auth' : undef );
 }
 
-sub core { # get core URL
+# get core URL
+sub core {
     my ($self) = @_;
-    $self->app->global_options->core // $self->config->{core}
-        // ( $self->base ? $self->base . '/core' : undef );
+    $_[0]->option('core') // ( $self->base ? $self->base . '/core' : undef );
 }
 
-# get current patron identifier
-sub patron { $_[0]->{patron} }
+# get patron identifier
+sub patron { $_[0]->option('patron') }
 
-# TODO: cleanup duplicated code
+# get current scopes
+sub scope { $_[0]->option('scope') }
+
+# get verbose mode
+sub verbose { $_[0]->option('verbose') }
+
+sub token {
+    my ($self) = @_;
+
+    $self->app->global_options->{'token'}
+        // $self->session->{'access_token'} 
+        // $self->config->{'access_token'};
+}
+
+sub authentificated {
+    my ($self, %options) = @_;
+
+    # TODO: scope
+    my $token = $self->token // return;
+    my $expires = $self->session->{expires_at} // return;
+
+    if ($expires <= time) {
+        $self->log("access token expired.",$options{verbose});
+        return;
+    }
+
+    if ($options{scope}) {
+        my $scope = $self->scope // '';
+        if ( index($scope, $options{scope}) == -1 ) {
+            $self->log("curren scope '$scope' does not allow ".$options{scope},$options{verbose});
+            return;
+        }
+    }
+
+    return 1;
+}
+
+# emit a message only in verbose mode
+sub log {
+    my ($self, $msg, $verbose) = @_;
+    if ($verbose // $self->verbose) {
+        say "# $_" for split "\n", $msg;
+    }
+}
+
+# <TODO>: cleanup duplicated code
 sub config_file {
     my ($self) = @_;
     $self->app->global_options->config
         // (-e 'paia.json' ? 'paia.json' : undef);
 }
+
 sub config {
     my ($self) = @_;
     $self->{config} //= do {
         my $file = $self->config_file;
         local (@ARGV, $/) = $file;
-        defined $file ? $self->parse(<>,$file) : { };
+        defined $file ? decode_json(<>,$file) : { };
     };
 }
+
 sub session_file {
     my ($self) = @_;
     $self->app->global_options->session
         // (-e '.paia_session' ? '.paia_session' : undef);
 }
+
 sub session {
     my ($self) = @_;
     $self->{session} //= do {
         my $file = $self->session_file;
         local (@ARGV, $/) = $file;
-        defined $file ? $self->parse(<>,$file) : { };
+        defined $file ? decode_json(<>,$file) : { };
     };
 }
+# </TODO>
 
 sub save_session {
     my ($self) = @_;
     my $file = $self->session_file // '.paia_session';
-    say "saving session not implemented yet!";
+    open (my $fh, '>', $file) or die "failed to open $file";
+    print {$fh} encode_json($self->session);
+    close $fh;
+    $self->log("saved session to $file");
 }
 
 sub agent {
     my ($self) = @_;
-    $self->{agent} //= HTTP::Tiny->new(
-        verify_SSL => (!$self->app->global_options->{insecure})
+    $self->{agent} //= App::PAIA::Agent->new(
+        insecure => $self->option('insecure'),
+        verbose  => $self->option('verbose')
     );
 }
 
 sub request {
     my ($self, $method, $url, $param) = @_;
-    $param //= { };
 
-    my %options = (
-        headers => {
-            'Accept' => 'application/json',
-        },
-    );
-
+    my %headers;
     if ($url !~ /login$/) {
-        my $token = $self->{access_token} // die "missing access_token - login required\n";
-        $options{headers}->{Authorization} = "Bearer $token";
+        my $token = $self->token // die "missing access_token - login required\n";
+        $headers{Authorization} = "Bearer $token";
     }
 
-    if ($method eq 'POST') {
-        $options{headers}->{'Content-Type'} = 'application/json';
-        $options{content} = $self->json($param);
-    } elsif (%$param) {
-        $url = URI->new($url)->query_form(%$param);
-    }
-
-    my $response = $self->agent->request( $method, $url, \%options );
-
-    # TODO: more error checking
+    my ($response, $json) = $self->agent->request( $method, $url, $param, %headers );
 
     if ($response->{status} ne '200') {
         die "HTTP request failed with response code ".$response->{status}.":\n".
             $response->{content}.
             "\n";
     }
-    
-    return $self->parse($response->{content});
-}
 
-sub parse {
-    my $data = eval { JSON::PP->new->utf8->relaxed->decode($_[1]); };
-    if ($@) {
-        my $msg = reverse $@;
-        $msg =~ s/.+? ta //sm;
-        die sprintf "JSON error: %s in %s\n", scalar reverse($msg), $_[2];
+    # TODO: more error handling
+
+    if (my $scopes = $response->{headers}->{'x-oauth-scopes'}) {
+        $self->{session}->{scope} = $scopes;
     }
-    return $data;
-}
 
-sub json {
-    JSON::PP->new->utf8->pretty->encode($_[1]); 
+    return $json;
 }
 
 sub login {
@@ -126,10 +160,10 @@ sub login {
 
     $self->usage_error("missing username") unless defined $params{username};
     $self->usage_error("missing password") unless defined $params{password};
-    if (defined $params{scopes}) {
-        $params{scopes} =~ s/,/ /g;
+    if (defined $params{scope}) {
+        $params{scope} =~ s/,/ /g;
     } else {
-        delete $params{scopes} if exists $params{scopes};
+        delete $params{scope} if exists $params{scope};
     }
     $params{grant_type} = 'password';
 
@@ -137,9 +171,46 @@ sub login {
 
     $self->{$_} = $response->{$_} for qw(expires_in access_token token_type patron scope);
 
+    $self->{session}->{$_} = $response->{$_} for qw(access_token patron scope);
+    $self->{session}->{expires_at} = time + $response->{expires_in};
+
+    $self->save_session;
+
     return $response;
 }
 
-sub token { $_[0]->{access_token} } 
+our %required_scopes = (
+    patron  => 'read_patron',
+    items   => 'read_item',
+    request => 'write_item',
+    renew   => 'write_item',
+    cancel  => 'write_item',
+    fees    => 'read_fees',
+    change  => 'change_password',
+);
+
+sub core_request {
+    my ($self, $method, $command, $params, $opt) = @_;
+
+    my $core  = $self->core // $self->usage_error("missing PAIA core URL");
+    my $scope = $required_scopes{$command};
+
+    if (!$self->authentificated( scope => $scope )) {
+        $self->log("auto-login with scope $scope");
+        $self->login(
+            username => ($self->app->global_options->{username} // $self->config->{username}),
+            password => ($self->app->global_options->{password} // $self->config->{password}),
+            scope    => $scope,
+        );
+    }
+
+    my $patron = $self->patron // $self->usage_error("missing patron identifier");
+
+    # TODO: URI-escape patron
+    my $url = "$core/$patron";
+    $url .= "/$command" if $command ne 'patron';
+
+    $self->request( $method => $url );
+}
 
 1;

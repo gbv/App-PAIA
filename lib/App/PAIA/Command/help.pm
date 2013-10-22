@@ -53,8 +53,7 @@ sub execute {
             say;
         }    
 
-        say "use 'paia help <command>' for help on a command";
-        say "use 'man paia' or 'info paia' for a detailed manual";
+        say "call 'paia help <command>' or 'perldoc paia' for more help";
     }
 }
 

@@ -1,1 +1,4 @@
 *.bak
+.paia_session
+paia.json
+.build

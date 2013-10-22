@@ -4,9 +4,13 @@ use base 'App::PAIA::Command';
 use v5.14;
 #VERSION
 
+use App::PAIA::JSON;
+
 sub execute {
     my ($self, $opt, $args) = @_;
-    die "Not implemented yet!\n";
+
+    my $response = $self->core_request( 'GET', 'fees', undef, $opt );
+    say encode_json($response);
 }
 
 1;

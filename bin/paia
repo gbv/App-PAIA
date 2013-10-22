@@ -8,19 +8,103 @@ App::PAIA->run;
 
 =head1 USAGE
 
-    paia --auth https://example.org/auth login --username alice --password 12345
+    paia login --base http://example.org/ --username alice --password 12345
     paia patron
     paia status
     ...
     paia logout
 
+Run C<paia help> or C<perldoc paia> for more commands and options.
+
 =head1 DESCRIPTION
 
-This command line client can be used to access Patrons Account Information API
-(PAIA) servers. Call C<paia help> to list available commands and options.
+The paia command line client can be used to access library patron account
+information, such as loans, reservations, and fees via the Patrons Account
+Information API (PAIA). 
+
+PAIA defines three commands for authentification (PAIA auth) and six commands
+to access a patron account (PAIA core). Each command can be called as first
+argument to the client. For instance
+
+    paia items [options]
+
+calls the "items" command of PAIA core. Access to PAIA core commands is granted
+by access tokens that can be required by the "login" command. By default the
+client automatically calls "login" if needed. Access token, patron identifier
+and status of a connection are stored in a session file (C<.paia_session> by
+default).
+
+=head1 COMMANDS
+
+Call C<< paia help <command> >> for help on a specific PAIA command. Note that
+PAIA servers do not need to support all PAIA commands.
+
+=head2 PAIA auth
+
+=over
+
+=item login
+
+Get a access token and patron identifier from credentials (username and
+password). The patron identifier is used to uniquely identify a patron account.
+It may be identical with the username.
+
+=item logout
+
+Invalidate an access token.
+
+=item change
+
+Change login password.
+
+=back
+
+=head2 PAIA core
+
+=over
+
+=item patron
+
+Get general patron information.
+
+=item items
+
+List loans, reservations and other items related to a patron.
+
+=item request
+
+Request one or more items for reservation or delivery.
+
+=item renew
+
+Renew one or more documents held by a patron.
+
+=item cancel
+
+Cancel requests.
+
+=item fees
+
+List fees.
+
+=back
+
+=head2 Client commands
+
+=over
+
+=item status
+
+Show current session status (access token, patron identifier etc.).
+
+=item help
+
+Show help.
+
+=back
 
 =head1 SEE ALSO
 
-The PAIA specification can be found at L<http://gbv.github.io/paia/>.
+L<http://gbv.github.io/paia/> - PAIA specification
 
 =cut

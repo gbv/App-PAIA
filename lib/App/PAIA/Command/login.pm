@@ -4,28 +4,22 @@ use base 'App::PAIA::Command';
 use v5.14;
 #VERSION
 
+use App::PAIA::JSON;
+
 sub description {
     "requests or renews an access_token from a PAIA auth server."
-}
-
-sub opt_spec {
-    ["username:s"=>"username or -number for login"],
-    ["password:s"=>"password for login"],
-    ["scopes:s"=>"comma-separated list of scopes"];
 }
 
 sub execute {
     my ($self, $opt, $args) = @_;
 
+    # use command line or config options
     my $response = $self->login( 
-        username => ($opt->username // $self->config->{username}),
-        password => ($opt->password // $self->config->{password}),
-        scopes   => ($opt->scopes // $self->config->{scopes}),
+        map { $_ => ($self->app->global_options->{$_} // $self->config->{$_}) }
+        qw(username password scope)
     );
 
-    say $self->json($response);
-
-    $self->save_session;
+    print encode_json($response);
 }
 
 1;
