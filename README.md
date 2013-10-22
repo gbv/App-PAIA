@@ -28,6 +28,4 @@ This way, however, the manual is not installed, so `man paia` won't work.
 
 ## Code status
 
-[![Build Status](https://travis-ci.org/nichtich/App-PAIA.png)](https://travis-ci.org/nichtich/App-PAIA)
-[![Coverage Status](https://coveralls.io/repos/nichtich/App-PAIA/badge.png?branch=master)](https://coveralls.io/r/nichtich/App-PAIA?branch=master)
-[![Kwalitee Score](http://cpants.cpanauthors.org/dist/App-PAIA.png)](http://cpants.cpanauthors.org/dist/App-PAIA)
+[![Build Status](https://travis-ci.org/gbv/App-PAIA.png)](https://travis-ci.org/gbv/App-PAIA)
