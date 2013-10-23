@@ -4,31 +4,34 @@ use base 'App::Cmd';
 use v5.14;
 #VERSION
 
+# TODO: This should be part of App::Cmd, see https://github.com/rjbs/App-Cmd/pull/28
 sub run {
     my ($self) = @_;
     $self = $self->new unless ref $self;
 
     my @argv = $self->prepare_args();
     if (grep { $_ eq '--version' } @argv) {
-        printf "paia (App::PAIA) version %s (%s)\n", $App::PAIA::VERSION, $self->full_arg0;
+        printf "%s (%s) version %s (%s)\n", 
+            $self->arg0, ref($self),
+            $self->VERSION, $self->full_arg0;
     } else {
         App::Cmd::run(@_);
     }
 }
 
 sub global_opt_spec {
-    ['base|b=s'    => "base URL of PAIA server"],
-    ['auth=s'      => "base URL of PAIA auth server"],
-    ['core=s'      => "base URL of PAIA core server"],
-    ['insecure|k'  => "disable verification of SSL certificates"],
-    ['config|c=s'  => "configuration file (default: ./paia.json)"],
-    ['session|s=s' => "session file (default: ./.paia_session)"],
-    ['verbose|v'   => "show what's going on internally"],
-    ['token|t=s'   => "explicit access_token"],
-    ["username:s"  => "username for login"],
-    ["password:s"  => "password for login"],
-    ["scope:s"     => "comma-separated list of scopes for login"],
-    ["version"     => "show client version", { shortcircuit => 1 } ];
+    ['base|b=s'     => "base URL of PAIA server"],
+    ['auth=s'       => "base URL of PAIA auth server"],
+    ['core=s'       => "base URL of PAIA core server"],
+    ['insecure|k'   => "disable verification of SSL certificates"],
+    ['config|c=s'   => "configuration file (default: ./paia.json)"],
+    ['session|s=s'  => "session file (default: ./.paia_session)"],
+    ['verbose|v'    => "show what's going on internally"],
+    ['token|t=s'    => "explicit access_token"],
+    ["username|u=s" => "username for login"],
+    ["password|p=s" => "password for login"],
+    ["scope:s"      => "comma-separated list of scopes for login"],
+    ["version"      => "show client version", { shortcircuit => 1 } ];
 }
 
 1;

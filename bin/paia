@@ -105,6 +105,16 @@ Show help.
 
 =head1 SEE ALSO
 
-L<http://gbv.github.io/paia/> - PAIA specification
+=over
+
+=item L<http://gbv.github.io/paia/>
+
+PAIA specification
+
+=item L<App::PAIA>
+
+Perl module used to implement this client
+
+=back
 
 =cut

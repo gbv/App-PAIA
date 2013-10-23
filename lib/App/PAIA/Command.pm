@@ -6,13 +6,19 @@ use v5.14;
 
 use App::PAIA::Agent;
 use App::PAIA::JSON;
+use URI::Escape;
 
-# get option from command line, session, or config file
 sub option { 
     my ($self, $name) = @_;
-    $self->app->global_options->{$name} 
-        // $self->session->{$name} 
-        // $self->config->{$name};
+    $self->app->global_options->{$name} # command line 
+        // $self->session->{$name}      # session file
+        // $self->config->{$name};      # config file
+}
+
+sub explicit_option {
+    my ($self, $name) = @_;
+    $self->app->global_options->{$name} # command line
+        // $self->config->{$name};      # config file
 }
 
 # get base URL
@@ -154,18 +160,21 @@ sub request {
 }
 
 sub login {
-    my ($self, %params) = @_;
+    my ($self, $scope) = @_;
 
-    my $auth = $self->auth // $self->usage_error("missing PAIA auth URL");
+    my $auth = $self->auth or $self->usage_error("missing PAIA auth server URL");
 
-    $self->usage_error("missing username") unless defined $params{username};
-    $self->usage_error("missing password") unless defined $params{password};
-    if (defined $params{scope}) {
-        $params{scope} =~ s/,/ /g;
-    } else {
-        delete $params{scope} if exists $params{scope};
+    # take credentials from command line or config file only
+    my %params = (
+        username => ($self->explicit_option('username') // $self->usage_error("missing username")),
+        password => ($self->explicit_option('password') // $self->usage_error("missing password")),
+        grant_type => 'password',
+    );
+
+    if (defined $scope) {
+        $scope =~ s/,/ /g;
+        $params{scope} = $scope;
     }
-    $params{grant_type} = 'password';
 
     my $response = $self->request( "POST", "$auth/login", \%params );
 
@@ -173,6 +182,8 @@ sub login {
 
     $self->{session}->{$_} = $response->{$_} for qw(access_token patron scope);
     $self->{session}->{expires_at} = time + $response->{expires_in};
+    $self->{session}->{auth} = $auth;
+    $self->{session}->{core} = $self->core if defined $self->core;
 
     $self->save_session;
 
@@ -192,23 +203,25 @@ our %required_scopes = (
 sub core_request {
     my ($self, $method, $command, $params, $opt) = @_;
 
-    my $core  = $self->core // $self->usage_error("missing PAIA core URL");
+    my $core  = $self->core // $self->usage_error("missing PAIA core server URL");
     my $scope = $required_scopes{$command};
 
     if (!$self->authentificated( scope => $scope )) {
         $self->log("auto-login with scope $scope");
-        $self->login(
-            username => ($self->app->global_options->{username} // $self->config->{username}),
-            password => ($self->app->global_options->{password} // $self->config->{password}),
-            scope    => $scope,
-        );
+        $self->login( $scope );
     }
 
     my $patron = $self->patron // $self->usage_error("missing patron identifier");
 
-    # TODO: URI-escape patron
-    my $url = "$core/$patron";
+    my $url = "$core/".uri_escape($patron);
     $url .= "/$command" if $command ne 'patron';
+
+    # save PAIA core URL in session
+    if ( ($self->session->{core} // '') ne $core ) {
+        $self->{session}->{core} = $core;
+        $self->save_session;
+        # TODO: could wes save new expiry as well? 
+    }
 
     $self->request( $method => $url );
 }

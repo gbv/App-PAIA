@@ -13,11 +13,7 @@ sub description {
 sub execute {
     my ($self, $opt, $args) = @_;
 
-    # use command line or config options
-    my $response = $self->login( 
-        map { $_ => ($self->app->global_options->{$_} // $self->config->{$_}) }
-        qw(username password scope)
-    );
+    my $response = $self->login( $self->explicit_option('scope') );
 
     print encode_json($response);
 }
