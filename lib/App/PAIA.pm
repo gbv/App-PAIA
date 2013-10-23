@@ -27,6 +27,7 @@ sub global_opt_spec {
     ['config|c=s'   => "configuration file (default: ./paia.json)"],
     ['session|s=s'  => "session file (default: ./.paia_session)"],
     ['verbose|v'    => "show what's going on internally"],
+    ['quiet|q'      => "don't show processing"],
     ['token|t=s'    => "explicit access_token"],
     ["username|u=s" => "username for login"],
     ["password|p=s" => "password for login"],

@@ -23,7 +23,7 @@ sub execute {
         unless @docs;
 
     my $response = $self->core_request( 'POST', 'renew', { doc => \@docs } );
-    say encode_json($response);
+    print encode_json($response);
 }
 
 1;

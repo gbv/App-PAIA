@@ -131,8 +131,7 @@ sub save_session {
 sub agent {
     my ($self) = @_;
     $self->{agent} //= App::PAIA::Agent->new(
-        insecure => $self->option('insecure'),
-        verbose  => $self->option('verbose')
+        map { $_ => $self->option($_) } qw(insecure verbose quiet)
     );
 }
 
@@ -192,6 +191,7 @@ sub login {
     
     return $response;
 }
+
 
 our %required_scopes = (
     patron  => 'read_patron',

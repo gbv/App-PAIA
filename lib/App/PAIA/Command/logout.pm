@@ -14,7 +14,7 @@ sub execute {
     my $response = $self->request( 
         "POST", "$auth/logout", { patron => $self->patron }
     );
-    say encode_json($response);
+    print encode_json($response);
 
     if (defined $self->session_file) {
         $self->session;

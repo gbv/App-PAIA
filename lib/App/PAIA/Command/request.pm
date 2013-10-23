@@ -20,7 +20,7 @@ sub execute {
         unless @docs;
 
     my $response = $self->core_request( 'POST', 'request', { doc => \@docs } );
-    say encode_json($response);
+    print encode_json($response);
 }
 
 1;

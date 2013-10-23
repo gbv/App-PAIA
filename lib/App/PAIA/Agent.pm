@@ -11,7 +11,8 @@ sub new {
     my ($class, %options) = @_;
     bless {
         agent   => HTTP::Tiny->new( verify_SSL => (!$options{insecure}) ),
-        verbose => !!$options{verbose}
+        verbose => !!$options{verbose},
+        quiet   => !!$options{quiet},
     }, $class;
 }
 
@@ -26,6 +27,8 @@ sub request {
     };
     my $content;
 
+    say "# $method $url" unless $self->{quiet};
+
     if ($method eq 'POST') {
         $headers->{'Content-Type'} = 'application/json';
         $content = encode_json($param);
@@ -38,6 +41,7 @@ sub request {
         headers => $headers,
         content => $content    
     } );
+    say "> " if $self->{verbose};
     $self->show_response( $response );
    
     return $response if $response->{status} eq '599';
@@ -62,8 +66,6 @@ sub request {
 
 sub show_request {
     my ($self, $method, $url, $headers, $content) = @_;
-
-    say "# $method $url";
     return unless $self->{verbose};
 
     say "> $method " . $url->path_query . " HTTP/1.1";
@@ -110,6 +112,10 @@ disables C<verfiy_SSL>.
 =item verbose
 
 enables output of request and response.
+
+=item quiet
+
+disables output of HTTP method and URL before each request.
 
 =back
 

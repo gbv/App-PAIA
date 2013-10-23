@@ -10,7 +10,7 @@ sub execute {
     my ($self, $opt, $args) = @_;
 
     my $response = $self->core_request('GET', 'fees');
-    say encode_json($response);
+    print encode_json($response);
 }
 
 1;

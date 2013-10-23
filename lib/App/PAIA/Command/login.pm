@@ -14,7 +14,6 @@ sub execute {
     my ($self, $opt, $args) = @_;
 
     my $response = $self->login( $self->explicit_option('scope') );
-
     print encode_json($response);
 }
 
