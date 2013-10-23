@@ -62,6 +62,8 @@ sub request {
 
 sub show_request {
     my ($self, $method, $url, $headers, $content) = @_;
+
+    say "# $method $url";
     return unless $self->{verbose};
 
     say "> $method " . $url->path_query . " HTTP/1.1";

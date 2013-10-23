@@ -20,7 +20,7 @@ sub execute {
         Getopt::Long::Descriptive->VERSION(0.084);
 
         my (undef, $usage) = Getopt::Long::Descriptive::describe_options(
-            "%c $command %o ", $cmd->opt_spec, App::PAIA->global_opt_spec
+            $cmd->usage_desc, $cmd->opt_spec, App::PAIA->global_opt_spec
         );
 
         my $desc = $cmd->description; chomp $desc;

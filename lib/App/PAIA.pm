@@ -42,11 +42,6 @@ sub global_opt_spec {
 
 Run C<paia help> or C<perldoc paia> for more commands and options.
 
-=head1 WARNING
-
-B<The current version only supports read-only access. Methods 'request',
-'renew', 'cancel', and 'change' are not supported yet.>
-
 =head1 DESCRIPTION
 
 The Patrons Account Information API (PAIA) is a HTTP based API to access

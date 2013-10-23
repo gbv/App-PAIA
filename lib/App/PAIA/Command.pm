@@ -7,6 +7,7 @@ use v5.14;
 use App::PAIA::Agent;
 use App::PAIA::JSON;
 use URI::Escape;
+use URI;
 
 sub option { 
     my ($self, $name) = @_;
@@ -64,14 +65,17 @@ sub not_authentificated {
         }
     }
 
-    if ($scope) {
-        my $has_scope = $self->scope // '';
-        if ( index($has_scope, $scope) == -1 ) {
-            return "curren scope '$scope' does not allow $has_scope";
-        }
+    if ($scope and !$self->has_scope($scope)) {
+        return "current scope does not include $scope";
     }
 
     return;
+}
+
+sub has_scope {
+    my ($self, $scope) = @_;
+    my $has_scope = $self->scope // '';
+    return index($has_scope, $scope) != -1;
 }
 
 # emit a message only in verbose mode
@@ -91,12 +95,7 @@ sub config_file {
 
 sub config {
     my ($self) = @_;
-    $self->{config} //= do {
-        my $file = $self->config_file;
-        local $/;
-        open (my $fh, '<', $file) or die "failed to open $file\n";
-        defined $file ? decode_json(<$fh>,$file) : { };
-    };
+    $self->{config} //= $self->load_file( $self->config_file, 'config file' );
 }
 
 sub session_file {
@@ -107,13 +106,17 @@ sub session_file {
 
 sub session {
     my ($self) = @_;
-    $self->{session} //= do {
-        my $file = $self->session_file;
-        local $/;
-        open (my $fh, '<', $file) or die "failed to open $file\n";
-        defined $file ? decode_json(<$fh>,$file) : { };
-    };
+    $self->{session} //= $self->load_file( $self->session_file, 'session file' );
 }
+
+sub load_file {
+    my ($self, $file, $type) = @_;
+    return { } unless defined $file;
+    local $/;
+    open (my $fh, '<', $file) or die "failed to open $type $file\n";
+    decode_json(<$fh>,$file);
+}
+
 # </TODO>
 
 sub save_session {
@@ -186,7 +189,7 @@ sub login {
     $self->{session}->{core} = $self->core if defined $self->core;
 
     $self->save_session;
-
+    
     return $response;
 }
 
@@ -201,7 +204,7 @@ our %required_scopes = (
 );
 
 sub core_request {
-    my ($self, $method, $command, $params, $opt) = @_;
+    my ($self, $method, $command, $params) = @_;
 
     my $core  = $self->core // $self->usage_error("missing PAIA core server URL");
     my $scope = $required_scopes{$command};
@@ -209,6 +212,10 @@ sub core_request {
     if ($self->not_authentificated( $scope )) {
         $self->log("auto-login with scope $scope");
         $self->login( $scope );
+        if ( $self->scope and !$self->has_scope($scope) ) {
+            say "current scope does not include $scope!";
+            exit 1;
+        }
     }
 
     my $patron = $self->patron // $self->usage_error("missing patron identifier");
@@ -220,10 +227,22 @@ sub core_request {
     if ( ($self->session->{core} // '') ne $core ) {
         $self->{session}->{core} = $core;
         $self->save_session;
-        # TODO: could wes save new expiry as well? 
+        # TODO: could we save new expiry as well? 
     }
 
-    $self->request( $method => $url );
+    $self->request( $method => $url, $params );
+}
+
+# used in command::renew and ::cancel
+sub uri_list {
+    my $self = shift;
+    map {
+        /^((edition|item)=)?(.+)/;
+        my $uri = URI->new($3);
+        $self->usage_error("not an URI: $3") unless $uri and $uri->scheme;
+        my $d = { ($2 // "item") => "$uri" };
+        $d;
+    } @_;
 }
 
 1;

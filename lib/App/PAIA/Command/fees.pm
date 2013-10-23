@@ -9,7 +9,7 @@ use App::PAIA::JSON;
 sub execute {
     my ($self, $opt, $args) = @_;
 
-    my $response = $self->core_request( 'GET', 'fees', undef, $opt );
+    my $response = $self->core_request('GET', 'fees');
     say encode_json($response);
 }
 
