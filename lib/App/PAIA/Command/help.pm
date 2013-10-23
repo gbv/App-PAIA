@@ -41,7 +41,7 @@ sub execute {
         my @cmd_groups = (
             "PAIA auth commands" => [qw(login logout change)],
             "PAIA core commands" => [qw(patron items request renew cancel fees)],
-            "client commands"    => [qw(status help)]
+            "client commands"    => [qw(session help)]
         );
 
         while (@cmd_groups) {
@@ -53,7 +53,7 @@ sub execute {
             say;
         }    
 
-        say "call 'paia help <command>' or 'perldoc paia' for more help";
+        say "call 'paia help <command>' or 'perldoc paia' for more details.";
     }
 }
 

@@ -14,7 +14,7 @@ sub decode_json {
         $msg =~ s/.+? ta //sm;
         $msg = "JSON error: " . scalar reverse($msg);
         $msg .= " in " . shift if @_;
-        die $msg;
+        die "$msg\n";
     }
     return $data;
 }

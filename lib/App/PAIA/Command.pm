@@ -53,27 +53,25 @@ sub token {
         // $self->config->{'access_token'};
 }
 
-sub authentificated {
-    my ($self, %options) = @_;
+sub not_authentificated {
+    my ($self, $scope) = @_;
 
-    # TODO: scope
-    my $token = $self->token // return;
-    my $expires = $self->session->{expires_at} // return;
+    my $token = $self->token // return "missing access token";
 
-    if ($expires <= time) {
-        $self->log("access token expired.",$options{verbose});
-        return;
-    }
-
-    if ($options{scope}) {
-        my $scope = $self->scope // '';
-        if ( index($scope, $options{scope}) == -1 ) {
-            $self->log("curren scope '$scope' does not allow ".$options{scope},$options{verbose});
-            return;
+    if ( my $expires = $self->session->{expires_at} ) {
+        if ($expires <= time) {
+            return "access token expired";
         }
     }
 
-    return 1;
+    if ($scope) {
+        my $has_scope = $self->scope // '';
+        if ( index($has_scope, $scope) == -1 ) {
+            return "curren scope '$scope' does not allow $has_scope";
+        }
+    }
+
+    return;
 }
 
 # emit a message only in verbose mode
@@ -95,8 +93,9 @@ sub config {
     my ($self) = @_;
     $self->{config} //= do {
         my $file = $self->config_file;
-        local (@ARGV, $/) = $file;
-        defined $file ? decode_json(<>,$file) : { };
+        local $/;
+        open (my $fh, '<', $file) or die "failed to open $file\n";
+        defined $file ? decode_json(<$fh>,$file) : { };
     };
 }
 
@@ -110,8 +109,9 @@ sub session {
     my ($self) = @_;
     $self->{session} //= do {
         my $file = $self->session_file;
-        local (@ARGV, $/) = $file;
-        defined $file ? decode_json(<>,$file) : { };
+        local $/;
+        open (my $fh, '<', $file) or die "failed to open $file\n";
+        defined $file ? decode_json(<$fh>,$file) : { };
     };
 }
 # </TODO>
@@ -206,7 +206,7 @@ sub core_request {
     my $core  = $self->core // $self->usage_error("missing PAIA core server URL");
     my $scope = $required_scopes{$command};
 
-    if (!$self->authentificated( scope => $scope )) {
+    if ($self->not_authentificated( $scope )) {
         $self->log("auto-login with scope $scope");
         $self->login( $scope );
     }

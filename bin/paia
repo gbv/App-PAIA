@@ -10,8 +10,8 @@ App::PAIA->run;
 
     paia login --base http://example.org/ --username alice --password 12345
     paia patron
-    paia status
     ...
+    paia session --verbose
     paia logout
 
 Run C<paia help> or C<perldoc paia> for more commands and options.
@@ -30,9 +30,19 @@ argument to the client. For instance
 
 calls the "items" command of PAIA core. Access to PAIA core commands is granted
 by access tokens that can be required by the "login" command. By default the
-client automatically calls "login" if needed. Access token, patron identifier
-and status of a connection are stored in a session file (C<.paia_session> by
-default).
+client automatically calls "login" if needed.
+
+Basic options, such as base/core/auth URLs, username, and password can be stored
+in a config file, such as following. By default C<paia.json> read used if found.
+
+    {
+      "base": "http://example.org/",
+      "username": "alice",
+      "password": "12345"
+    }
+
+Access token, patron identifier and PAIA server URLs are stored in a session
+file (C<.paia_session> by default) that can be checked with command "session".
 
 =head1 COMMANDS
 
@@ -93,9 +103,9 @@ List fees.
 
 =over
 
-=item status
+=item session
 
-Show current session status (access token, patron identifier etc.).
+Shows the current PAIA auth session status from session file.
 
 =item help
 
