@@ -9,9 +9,24 @@ raised at <https://github.com/gbv/App-PAIA/issues>.
 
 ## Installation
 
-Unless released at CPAN and as package for your favorite operating system,
-one needs to build and install the client from scratch after cloning/copying
-from the repository .
+## From CPAN
+
+Use your favorite CPAN installer to install the CPAN module
+[App::PAIA](https://metacpan.org/release/App-PAIA).
+
+With cpanminus ([installation described
+here](https://metacpan.org/pod/App::cpanminus#INSTALLATION) the
+client can be installed on command line with
+
+    cpanm App::PAIA 
+
+or
+
+    sudo cpanm App::PAIA
+
+### Prebuild packages
+
+Software packages for Debian and other Linux systems are not available yet.
 
 ### Build and install from scratch
 
