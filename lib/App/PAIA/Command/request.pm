@@ -2,7 +2,7 @@
 package App::PAIA::Command::request;
 use strict;
 use v5.10;
-use base 'App::PAIA::Command';
+use parent 'App::PAIA::Command';
 #VERSION
 
 sub usage_desc {

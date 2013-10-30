@@ -47,7 +47,7 @@ sub execute {
         my @cmd_groups = (
             "PAIA auth commands" => [qw(login logout change)],
             "PAIA core commands" => [qw(patron items request renew cancel fees)],
-            "client commands"    => [qw(session help)]
+            "client commands"    => [qw(config session help)]
         );
 
         while (@cmd_groups) {

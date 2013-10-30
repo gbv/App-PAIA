@@ -8,7 +8,7 @@ App::PAIA->run;
 
 =head1 SYNOPSIS
 
-    paia login --base http://example.org/paia/ --username alice --password 12345
+    paia login --base http://example.org/paia/ -u alice -p 12345
     paia patron
     paia items
     paia renew http://uri.example.org/item/123
@@ -20,31 +20,29 @@ Run C<paia help> or C<perldoc paia> for more commands and options.
 
 =head1 DESCRIPTION
 
-The paia command line client can be used to access library patron account
+The B<paia> command line client can be used to access library patron account
 information, such as loans, reservations, and fees via the Patrons Account
 Information API (PAIA). 
 
 PAIA defines three commands for authentification (PAIA auth) and six commands
-to access a patron account (PAIA core). Each command can be called as first
-argument to the client. For instance
+to access a patron account (PAIA core). For instance
 
     paia items [options]
 
 calls the "items" command of PAIA core. Access to PAIA core commands is granted
 by access tokens that can be required by the "login" command. By default the
-client automatically calls "login" if needed.
+client automatically calls "login" if needed.  Access token, patron identifier
+and PAIA server URLs are stored in a session file (C<paia-session.json> by
+default) that can be checked with command "session".
 
 Basic options, such as base/core/auth URLs, username, and password can be stored
-in a config file, such as following. By default C<paia.json> read used if found.
+in a config file (C<paia.json> by default), such as following:
 
     {
       "base": "http://example.org/paia/",
       "username": "alice",
       "password": "12345"
     }
-
-Access token, patron identifier and PAIA server URLs are stored in a session
-file (C<.paia_session> by default) that can be checked with command "session".
 
 =head1 COMMANDS
 
@@ -55,18 +53,17 @@ PAIA servers do not need to support all PAIA commands.
 
 =over
 
-=item login
+=item B<login> (<http://gbv.github.io/paia/paia.html#login>)
 
 Get a access token and patron identifier from credentials (username and
-password). The patron identifier is used to uniquely identify a patron account.
-It may be identical with the username. On success access token, patron
-identifier and base URL are stored to a session file.
+password). On success access token, patron identifier and base URL are stored
+to a session file.
 
-=item logout
+=item B<logout> (<http://gbv.github.io/paia/paia.html#logout>)
 
 Invalidate an access token. An existing session file is deleted.
 
-=item change
+=item B<change> (<http://gbv.github.io/paia/paia.html#change>)
 
 Change login password (not implemented yet).
 
@@ -76,27 +73,27 @@ Change login password (not implemented yet).
 
 =over
 
-=item patron
+=item B<patron> (<http://gbv.github.io/paia/paia.html#patron>)
 
 Get general patron information.
 
-=item items
+=item B<items> (<http://gbv.github.io/paia/paia.html#items>)
 
 List loans, reservations and other items related to a patron.
 
-=item request
+=item B<request> (<http://gbv.github.io/paia/paia.html#request>)
 
 Request one or more items for reservation or delivery.
 
-=item renew
+=item B<renew> (<http://gbv.github.io/paia/paia.html#renew>)
 
 Renew one or more documents held by a patron.
 
-=item cancel
+=item B<cancel> (<http://gbv.github.io/paia/paia.html#cancel>)
 
 Cancel requests.
 
-=item fees
+=item B<fees> (<http://gbv.github.io/paia/paia.html#fees>)
 
 List fees.
 
@@ -106,11 +103,11 @@ List fees.
 
 =over
 
-=item session
+=item B<session>
 
 Shows the current PAIA auth session status from session file.
 
-=item help
+=item B<help>
 
 Show help.
 

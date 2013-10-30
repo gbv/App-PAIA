@@ -11,7 +11,7 @@ sub global_opt_spec {
     ['core=s'       => "base URL of PAIA core server"],
     ['insecure|k'   => "disable verification of SSL certificates"],
     ['config|c=s'   => "configuration file (default: ./paia.json)"],
-    ['session|s=s'  => "session file (default: ./.paia_session)"],
+    ['session|s=s'  => "session file (default: ./paia-session.json)"],
     ['verbose|v'    => "show what's going on internally"],
     ['quiet|q'      => "don't show processing"],
     ['token|t=s'    => "explicit access_token"],

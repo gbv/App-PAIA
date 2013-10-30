@@ -17,9 +17,9 @@ sub execute {
     );
     print encode_json($response);
 
-    if (defined $self->session_file) {
+    if (defined $self->session->file) {
         $self->session;
-        unlink $self->session_file;
+        unlink $self->session->file;
         $self->log("deleted session file");
     }
 
