@@ -7,11 +7,10 @@ use parent 'App::PAIA::Command';
 
 use App::PAIA::JSON;
 
-sub execute {
+sub _execute {
     my ($self, $opt, $args) = @_;
 
-    my $response = $self->core_request('GET', 'items');
-    print encode_json($response);
+    $self->core_request('GET', 'items');
 }
 
 1;

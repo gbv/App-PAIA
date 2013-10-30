@@ -8,6 +8,11 @@ use parent 'App::Cmd::Command::help';
 sub execute {
     my ($self, $opts, $args) = @_;
 
+    if ($self->app->global_options->version) {
+        $self->app->execute_command( $self->app->prepare_command('version') );
+        exit;
+    }
+
     if (@$args) {
         my $command = $args->[0];
         my ($cmd, $opt, $args) = $self->app->prepare_command(@$args);

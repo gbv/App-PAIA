@@ -246,4 +246,20 @@ sub uri_list {
     } @_;
 }
 
+# TODO: Think about making this part of App::Cmd
+sub execute {
+    my $self = shift;
+
+    if ($self->app->global_options->version) {
+        $self->app->execute_command( $self->app->prepare_command('version') );
+        exit;
+    } elsif ($self->app->global_options->help) {
+       $self->app->execute_command( $self->app->prepare_command('help', @ARGV) );
+        exit;
+    }
+
+    my $response = $self->_execute(@_);
+    print encode_json($response) if defined $response;
+}
+
 1;

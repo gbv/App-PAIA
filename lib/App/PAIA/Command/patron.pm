@@ -5,13 +5,10 @@ use v5.10;
 use parent 'App::PAIA::Command';
 #VERSION
 
-use App::PAIA::JSON;
-
-sub execute {
+sub _execute {
     my ($self, $opt, $args) = @_;
 
-    my $response = $self->core_request( 'GET', 'patron' );
-    print encode_json($response);
+    $self->core_request( 'GET', 'patron' );
 }
 
 1;

@@ -5,21 +5,6 @@ use v5.10;
 use parent 'App::Cmd';
 #VERSION
 
-# TODO: This should be part of App::Cmd, see https://github.com/rjbs/App-Cmd/pull/28
-sub run {
-    my ($self) = @_;
-    $self = $self->new unless ref $self;
-
-    my @argv = $self->prepare_args();
-    if (grep { $_ eq '--version' } @argv) {
-        printf "%s (%s) version %s (%s)\n", 
-            $self->arg0, ref($self),
-            $self->VERSION, $self->full_arg0;
-    } else {
-        App::Cmd::run(@_);
-    }
-}
-
 sub global_opt_spec {
     ['base|b=s'     => "base URL of PAIA server"],
     ['auth=s'       => "base URL of PAIA auth server"],
@@ -32,7 +17,8 @@ sub global_opt_spec {
     ['token|t=s'    => "explicit access_token"],
     ["username|u=s" => "username for login"],
     ["password|p=s" => "password for login"],
-    ["scope:s"      => "comma-separated list of scopes for login"],
+    ["scope|e=s"    => "comma-separated list of scopes for login"],
+    ["help|h|?"     => "show help", { shortcircuit => 1 } ],
     ["version"      => "show client version", { shortcircuit => 1 } ];
 }
 

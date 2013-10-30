@@ -5,8 +5,6 @@ use v5.10;
 use base 'App::PAIA::Command';
 #VERSION
 
-use App::PAIA::JSON;
-
 sub usage_desc {
     "%c request %o URI [item=URI] [edition=URI] ..."
     # storage not supported yet
@@ -20,8 +18,7 @@ sub execute {
     $self->usage_error("Missing document URIs to request")
         unless @docs;
 
-    my $response = $self->core_request( 'POST', 'request', { doc => \@docs } );
-    print encode_json($response);
+    $self->core_request( 'POST', 'request', { doc => \@docs } );
 }
 
 1;

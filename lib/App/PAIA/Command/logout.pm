@@ -22,6 +22,8 @@ sub execute {
         unlink $self->session_file;
         $self->log("deleted session file");
     }
+
+    return;
 }
 
 1;

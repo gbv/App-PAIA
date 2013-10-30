@@ -15,7 +15,7 @@ access token and PAIA server URLs. Options --verbose|-v enables details.
 MSG
 }
 
-sub execute {
+sub _execute {
     my ($self, $opt, $args) = @_;
 
     if ($self->verbose) {
@@ -46,6 +46,8 @@ sub execute {
     } else {
         $self->log('core URL: '.$self->core);
     }
+
+    return;
 }
 
 1;

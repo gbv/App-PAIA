@@ -5,17 +5,14 @@ use v5.10;
 use parent 'App::PAIA::Command';
 #VERSION
 
-use App::PAIA::JSON;
-
 sub description {
     "requests or renews an access_token from a PAIA auth server."
 }
 
-sub execute {
+sub _execute {
     my ($self, $opt, $args) = @_;
 
-    my $response = $self->login( $self->explicit_option('scope') );
-    print encode_json($response);
+    $self->login( $self->explicit_option('scope') );
 }
 
 1;
