@@ -1,7 +1,8 @@
 #ABSTRACT: common base class of PAIA client commands
 package App::PAIA::Command;
+use strict;
+use v5.10;
 use App::Cmd::Setup -command;
-use v5.14;
 #VERSION
 
 use App::PAIA::Agent;

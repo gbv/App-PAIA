@@ -1,7 +1,8 @@
 #ABSTRACT: Renew one or more documents held by a patron
 package App::PAIA::Command::renew;
-use base 'App::PAIA::Command';
-use v5.14;
+use strict;
+use v5.10;
+use parent 'App::PAIA::Command';
 #VERSION
 
 use App::PAIA::JSON;

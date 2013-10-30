@@ -1,5 +1,7 @@
+#ABSTRACT: Utility functions to encode/decode JSON
 package App::PAIA::JSON;
-use v5.14;
+use strict;
+use v5.10;
 #VERSION
 
 use base 'Exporter';

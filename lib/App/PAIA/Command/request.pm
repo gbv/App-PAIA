@@ -1,7 +1,8 @@
 #ABSTRACT: request one or more items for reservation or delivery
 package App::PAIA::Command::request;
+use strict;
+use v5.10;
 use base 'App::PAIA::Command';
-use v5.14;
 #VERSION
 
 use App::PAIA::JSON;

@@ -1,6 +1,7 @@
 #ABSTRACT: HTTP client wrapper
 package App::PAIA::Agent;
-use v5.14;
+use strict;
+use v5.10;
 #VERSION
 
 use HTTP::Tiny 0.018; # core module 0.012 does not support verify_SSL

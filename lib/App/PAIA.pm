@@ -1,7 +1,8 @@
 #ABSTRACT: Patrons Account Information API command line client
 package App::PAIA;
-use base 'App::Cmd';
-use v5.14;
+use strict;
+use v5.10;
+use parent 'App::Cmd';
 #VERSION
 
 # TODO: This should be part of App::Cmd, see https://github.com/rjbs/App-Cmd/pull/28

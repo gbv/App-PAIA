@@ -1,7 +1,8 @@
 #ABSTRACT: show help
 package App::PAIA::Command::help;
+use strict;
+use v5.10;
 use parent 'App::Cmd::Command::help';
-use v5.14;
 #VERSION
 
 sub execute {

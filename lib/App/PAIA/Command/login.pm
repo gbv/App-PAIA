@@ -1,7 +1,8 @@
 #ABSTRACT: get a access token and patron identifier
 package App::PAIA::Command::login;
-use base 'App::PAIA::Command';
-use v5.14;
+use strict;
+use v5.10;
+use parent 'App::PAIA::Command';
 #VERSION
 
 use App::PAIA::JSON;
