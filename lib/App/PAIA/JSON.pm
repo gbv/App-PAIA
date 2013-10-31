@@ -79,7 +79,6 @@ sub encode_json {
         $self->{data} = App::PAIA::JSON::decode_json(<$fh>,$file);
         close $fh;
         
-        # this may trigger a recursion
         $self->{owner}->log("loaded $type file $file");
         
         $self->{data}; 

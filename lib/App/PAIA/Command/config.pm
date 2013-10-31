@@ -19,7 +19,7 @@ sub usage_desc {
 }
 
 sub opt_spec {
-    ['ini|i' => 'print config values in INI-style as sorted key-value-pairs'],
+    ['ini|i' => 'list configuration in sorted ini-style'],
     ['delete|d=s' => 'remove a key from the configuration file'];
 }
 
@@ -30,19 +30,22 @@ sub _execute {
         $self->config->load;
         $self->config->delete($opt->delete);
         $self->config->store;
-        exit;
+        return;
     }
 
     if (@$args) {
         my ($key, $value) = @$args;
 
         if (defined $value) {
+            if (defined $self->config->file and -e $self->config->file) {
+                $self->config->load;
+            }
             $self->config->set( $key => $value );
             $self->config->store;
-            exit;
+            return;
         } elsif( defined ($value = $self->config->get($key)) ) {
             say $value;
-            exit;
+            return;
         } else {
             exit 1;
         }
@@ -52,10 +55,10 @@ sub _execute {
 
     if ($opt->ini) {
         foreach ( sort keys %{$self->config->{data}} ) {
-            print "$_=".$self->config->get($_)."\n" 
+            say "$_=".$self->config->get($_); 
         }
     } else {
-        print encode_json($self->config->{data});
+        return $self->config->{data};
     }
      
     return;

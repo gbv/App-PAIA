@@ -4,7 +4,7 @@ use strict;
 use v5.10;
 #VERSION
 
-use HTTP::Tiny 0.018; # core module 0.012 does not support verify_SSL
+use HTTP::Tiny 0.025;
 use URI;
 use App::PAIA::JSON;
 
