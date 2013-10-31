@@ -6,7 +6,7 @@ use v5.10;
 
 use parent 'Exporter';
 our @EXPORT = qw(decode_json encode_json);
-use JSON::PP qw();    # core module
+use JSON::PP qw();
 
 sub decode_json {
     my $json = shift;
