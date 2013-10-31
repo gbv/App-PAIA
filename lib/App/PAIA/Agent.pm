@@ -11,16 +11,17 @@ use App::PAIA::JSON;
 sub new {
     my ($class, %options) = @_;
     bless {
-        agent   => HTTP::Tiny->new( verify_SSL => (!$options{insecure}) ),
-        verbose => !!$options{verbose},
-        quiet   => !!$options{quiet},
+        agent    => HTTP::Tiny->new( verify_SSL => (!$options{insecure}) ),
+        verbose  => !!$options{verbose},
+        quiet    => !!$options{quiet},
+        insecure => !!$options{insecure},
     }, $class;
 }
 
 sub request {
     my $self    = shift;
     my $method  = shift;
-    my $url     = URI->new(shift);
+    my $url     = URI->new(shift) // '';
     my $param   = shift // {};
     my $headers = { 
         Accept => 'application/json',
@@ -29,6 +30,16 @@ sub request {
     my $content;
 
     say "# $method $url" unless $self->{quiet};
+
+    my $scheme = $url->scheme // '';
+    if ($self->{insecure}) {
+        return $self->error( msg => "Not an URL: $url" )
+            unless $scheme =~ /^https?$/;
+    } elsif( $scheme ne 'https' ) {
+        return $self->error( 
+            msg => "PAIA requires HTTPS unless insecure (got $url)"
+        );
+    }
 
     if ($method eq 'POST') {
         $headers->{'Content-Type'} = 'application/json';
@@ -48,21 +59,24 @@ sub request {
     return $response if $response->{status} eq '599';
 
     my $json = eval { decode_json($response->{content}) };
-    if (my $e = "$@") {
-        return {
-            url => "$url",
-            success => q{},
-            status  => 599,
-            reason  => 'Internal Exception',
-            content => $e,
-            headers => {
-                'content-type'   => 'text/plain',
-                'content-length' => length $e,
-            }
-        };
-    }
+    return $self->error( url => "$url", msg => "$@" ) if "$@";
 
     return ($response, $json);
+}
+
+sub error {
+    my ($self, %opts) = @_;
+    return {        
+        url     => $opts{url} // '',
+        success => q{},
+        status  => $opts{status} // '599',
+        reason  => 'Internal Exception',
+        content => $opts{msg},
+        headers => {
+            'content-type'   => 'text/plain',
+            'content-length' => length $opts{msg},
+        }
+    };
 }
 
 sub show_request {

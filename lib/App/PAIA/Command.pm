@@ -124,9 +124,8 @@ sub request {
     my ($response, $json) = $self->agent->request( $method, $url, $param, %headers );
 
     if ($response->{status} ne '200') {
-        die "HTTP request failed with response code ".$response->{status}.":\n".
-            $response->{content}.
-            "\n";
+        my $msg = $response->{content} // 'HTTP request failed: '.$response->{status};
+        die "$msg\n";
     }
 
     # TODO: more error handling
@@ -180,20 +179,28 @@ our %required_scopes = (
     change  => 'change_password',
 );
 
+sub auto_login_for {
+    my ($self, $command) = @_;
+
+    my $scope = $required_scopes{$command};
+
+    if ($self->not_authentificated( $scope )) {
+        # add to existing scopes (TODO: only if wanted)
+        my $new_scope = join ' ', split(' ',$self->scope // ''), $scope;
+        $self->log("auto-login with scope '$new_scope'");
+        $self->login( $new_scope );
+        if ( $self->scope and !$self->has_scope($scope) ) {
+            die "current scope does not include $scope!\n";
+        }
+    }
+}
+
 sub core_request {
     my ($self, $method, $command, $params) = @_;
 
     my $core  = $self->core // $self->usage_error("missing PAIA core server URL");
-    my $scope = $required_scopes{$command};
 
-    if ($self->not_authentificated( $scope )) {
-        $self->log("auto-login with scope $scope");
-        $self->login( $scope );
-        if ( $self->scope and !$self->has_scope($scope) ) {
-            say "current scope does not include $scope!";
-            exit 1;
-        }
-    }
+    $self->auto_login_for($command);
 
     my $patron = $self->patron // $self->usage_error("missing patron identifier");
 

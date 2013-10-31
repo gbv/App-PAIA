@@ -19,7 +19,8 @@ sub _execute {
     my ($self, $opt, $args) = @_;
 
     if (defined $self->session->file ) {
-        say encode_json($self->session) if $self->verbose;
+        my $data = $self->session->load;
+        say encode_json($data) if $self->verbose;
         my $msg = $self->not_authentificated;
         die "$msg.\n" if $msg;
         say "session looks fine.";

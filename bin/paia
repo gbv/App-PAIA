@@ -65,7 +65,7 @@ Invalidate an access token. An existing session file is deleted.
 
 =item B<change> (<http://gbv.github.io/paia/paia.html#change>)
 
-Change login password (not implemented yet).
+Change login password.
 
 =back
 

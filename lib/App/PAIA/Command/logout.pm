@@ -7,7 +7,7 @@ use parent 'App::PAIA::Command';
 
 use App::PAIA::JSON;
 
-sub execute {
+sub _execute {
     my ($self, $opt, $args) = @_;
 
     my $auth = $self->auth // $self->usage_error("missing PAIA auth URL");

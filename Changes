@@ -1,11 +1,13 @@
 Revision history for Perl module App::PAIA
 
-0.12    2013-10-31
+0.20    2013-10-31
 
-    * support Perl >= 5.10
     * better support --version and --help
     * new command 'config'
+    * implement PAIA method 'change'
     * changed session file from .paia_session to paia-session.json
+    * support Perl >= 5.10
+    * facilitate writing unit tests
 
 0.11    2013-10-23
 
