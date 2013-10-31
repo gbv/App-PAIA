@@ -3,9 +3,10 @@ Account Information API (PAIA)](http://gbv.github.io/paia)**. The client is
 implemented in Perl (at least version 5.10) and installed as
 [`paia`](https://metacpan.org/pod/paia).
 
-The latest version is available in a git repository at
-<https://github.com/gbv/App-PAIA>. Bug reports and feature requests can be
-raised at <https://github.com/gbv/App-PAIA/issues>.
+Releases are [available at CPAN](https://metacpan.org/release/App-PAIA). The
+latest version is in a git repository at <https://github.com/gbv/App-PAIA>. Bug
+reports and feature requests can be raised at
+<https://github.com/gbv/App-PAIA/issues>.
 
 ## Usage
 
@@ -46,6 +47,6 @@ Status of the latest revision (including unreleased revisions):
 [![Build Status](https://travis-ci.org/gbv/App-PAIA.png)](https://travis-ci.org/gbv/App-PAIA)
 [![Coverage Status](https://coveralls.io/repos/gbv/App-PAIA/badge.png)](https://coveralls.io/r/gbv/App-PAIA)
 
-Code kwalitee indicators of the [latest release](http://metacpan.org/release/VOJ/App-PAIA):
+Code kwalitee indicators of the [latest release](https://metacpan.org/release/App-PAIA):
 
 [![Kwalitee indicators](http://cpants.cpanauthors.org/dist/App-PAIA.png)](http://cpants.cpanauthors.org/dist/App-PAIA)
