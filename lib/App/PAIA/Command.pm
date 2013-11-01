@@ -10,23 +10,47 @@ use App::PAIA::JSON;
 use URI::Escape;
 use URI;
 
-sub config {
-    my ($self) = @_;
-    $self->{config} //= App::PAIA::JSON::File->new(
-        owner => $self,
-        type  => 'config',
-        file  => $self->app->global_options->config,
-    );
+# No Mo, Moo, Moose...
+sub has {
+    my ($name, %options) = @_;
+    my $default = $options{default};
+    no strict 'refs'; ## no critic 
+    *{__PACKAGE__."::$name"} = sub {
+        @_ > 1 
+            ? $_[0]->{$name} = $_[1]
+            : (!exists $_[0]->{$name} && $default)
+                ? $_[0]->{$name} = $default->($_[0])
+                : $_[0]->{$name}
+    }
 }
 
-sub session {
-    my ($self) = @_;
-    $self->{session} //= App::PAIA::JSON::File->new(
-        owner => $self,
-        type  => 'session',
-        file  => $self->app->global_options->session,
-    );
-}
+has config => ( 
+    default => sub {
+        App::PAIA::JSON::File->new(
+            owner => $_[0],
+            type  => 'config',
+            file  => $_[0]->app->global_options->config,
+        ) 
+    }
+);
+
+has session => ( 
+    default => sub { 
+        App::PAIA::JSON::File->new(
+            owner => $_[0],
+            type  => 'session',
+            file  => $_[0]->app->global_options->session,
+        ) 
+    }
+);
+
+has agent => (
+    default => sub {
+        App::PAIA::Agent->new(
+            map { $_ => $_[0]->option($_) } qw(insecure verbose quiet)
+        );
+    }
+);
 
 sub option { 
     my ($self, $name) = @_;
@@ -41,9 +65,6 @@ sub explicit_option {
         // $self->config->get($name);   # config file
 }
 
-# get base URL
-sub base { $_[0]->option('base') }
-
 # get auth URL
 sub auth { 
     my ($self) = @_;
@@ -55,6 +76,12 @@ sub core {
     my ($self) = @_;
     $_[0]->option('core') // ( $self->base ? $self->base . '/core' : undef );
 }
+
+#has_option 'base';
+#has_option 'patron';
+
+# get base URL
+sub base { $_[0]->option('base') }
 
 # get patron identifier
 sub patron { $_[0]->option('patron') }
@@ -103,13 +130,6 @@ sub log {
     if ($verbose // $self->verbose) {
         say "# $_" for split "\n", $msg;
     }
-}
-
-sub agent {
-    my ($self) = @_;
-    $self->{agent} //= App::PAIA::Agent->new(
-        map { $_ => $self->option($_) } qw(insecure verbose quiet)
-    );
 }
 
 sub request {
