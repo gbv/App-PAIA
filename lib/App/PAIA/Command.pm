@@ -7,10 +7,11 @@ use App::Cmd::Setup -command;
 
 use App::PAIA::Agent;
 use App::PAIA::JSON;
+use App::PAIA::File;
 use URI::Escape;
 use URI;
 
-# No Mo, Moo, Moose...
+# Implements lazy accessors just like Mo, Moo, Moose...
 sub has {
     my ($name, %options) = @_;
     my $default = $options{default};
@@ -26,20 +27,20 @@ sub has {
 
 has config => ( 
     default => sub {
-        App::PAIA::JSON::File->new(
-            owner => $_[0],
-            type  => 'config',
-            file  => $_[0]->app->global_options->config,
+        App::PAIA::File->new(
+            logger => $_[0]->logger,
+            type   => 'config',
+            file   => $_[0]->app->global_options->config,
         ) 
     }
 );
 
 has session => ( 
     default => sub { 
-        App::PAIA::JSON::File->new(
-            owner => $_[0],
-            type  => 'session',
-            file  => $_[0]->app->global_options->session,
+        App::PAIA::File->new(
+            logger => $_[0]->logger,
+            type   => 'session',
+            file   => $_[0]->app->global_options->session,
         ) 
     }
 );
@@ -47,8 +48,26 @@ has session => (
 has agent => (
     default => sub {
         App::PAIA::Agent->new(
-            map { $_ => $_[0]->option($_) } qw(insecure verbose quiet)
+            insecure => $_[0]->option('insecure'),
+            logger   => $_[0]->logger,
+            dumper   => $_[0]->dumper,
         );
+    }
+);
+
+has logger => (
+    default => sub {
+        $_[0]->app->global_options->verbose
+            ? sub { say "# $_" for split "\n", $_[0]; }
+            : sub { };
+    }
+);
+
+has dumper => (
+    default => sub {
+        $_[0]->app->global_options->full
+            ? sub { say "> $_" for split "\n", $_[0]; }
+            : sub { };
     }
 );
 
@@ -89,8 +108,13 @@ sub patron { $_[0]->option('patron') }
 # get current scopes
 sub scope { $_[0]->option('scope') }
 
-# get verbose mode
-sub verbose { $_[0]->option('verbose') }
+sub username {
+    $_[0]->explicit_option('username') // $_[0]->usage_error("missing username");
+}
+
+sub password {
+    $_[0]->explicit_option('password') // $_[0]->usage_error("missing password");
+}
 
 sub token {
     my ($self) = @_;
@@ -124,14 +148,6 @@ sub has_scope {
     return index($has_scope, $scope) != -1;
 }
 
-# emit a message only in verbose mode
-sub log {
-    my ($self, $msg, $verbose) = @_;
-    if ($verbose // $self->verbose) {
-        say "# $_" for split "\n", $msg;
-    }
-}
-
 sub request {
     my ($self, $method, $url, $param) = @_;
 
@@ -143,12 +159,19 @@ sub request {
 
     my ($response, $json) = $self->agent->request( $method, $url, $param, %headers );
 
+    # handle request errors
+    if (ref $json and defined $json->{error}) {
+        my $msg = $json->{error};
+        if (defined $json->{error_description}) {
+            $msg .= ': '.$json->{error_description};
+        }
+        die "$msg\n";
+    }
+
     if ($response->{status} ne '200') {
         my $msg = $response->{content} // 'HTTP request failed: '.$response->{status};
         die "$msg\n";
     }
-
-    # TODO: more error handling
 
     if (my $scopes = $response->{headers}->{'x-oauth-scopes'}) {
         $self->session->set( scope => $scopes );
@@ -164,8 +187,8 @@ sub login {
 
     # take credentials from command line or config file only
     my %params = (
-        username => ($self->explicit_option('username') // $self->usage_error("missing username")),
-        password => ($self->explicit_option('password') // $self->usage_error("missing password")),
+        username   => $self->username,
+        password   => $self->password,
         grant_type => 'password',
     );
 
@@ -207,7 +230,7 @@ sub auto_login_for {
     if ($self->not_authentificated( $scope )) {
         # add to existing scopes (TODO: only if wanted)
         my $new_scope = join ' ', split(' ',$self->scope // ''), $scope;
-        $self->log("auto-login with scope '$new_scope'");
+        $self->logger->("auto-login with scope '$new_scope'");
         $self->login( $new_scope );
         if ( $self->scope and !$self->has_scope($scope) ) {
             die "current scope does not include $scope!\n";
@@ -262,7 +285,9 @@ sub execute {
     }
 
     my $response = $self->_execute(@_);
-    print encode_json($response) if defined $response;
+    if (defined $response and !$self->app->global_options->quiet) {
+        print encode_json($response);
+    }
 }
 
 1;

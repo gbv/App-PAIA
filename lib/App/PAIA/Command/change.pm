@@ -10,13 +10,10 @@ sub _execute {
 
     my $auth = $self->auth // $self->usage_error("missing PAIA auth URL");
 
-    # take credentials from command line or config file only
     my %params = (
-        patron => $self->patron,
-        username =>
-            ($self->explicit_option('username') // $self->usage_error("missing username")),
-        old_password => 
-            ($self->explicit_option('password') // $self->usage_error("missing password")),
+        patron       => $self->patron,
+        username     => $self->username,
+        old_password => $self->password,
     );
 
     $self->auto_login_for('change');

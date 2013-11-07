@@ -11,10 +11,10 @@ use App::PAIA::JSON;
 sub new {
     my ($class, %options) = @_;
     bless {
-        agent    => HTTP::Tiny->new( verify_SSL => (!$options{insecure}) ),
-        verbose  => !!$options{verbose},
-        quiet    => !!$options{quiet},
         insecure => !!$options{insecure},
+        logger   => $options{logger},
+        dumper   => $options{dumper},
+        agent    => HTTP::Tiny->new( verify_SSL => (!$options{insecure}) ),
     }, $class;
 }
 
@@ -29,7 +29,7 @@ sub request {
     };
     my $content;
 
-    say "# $method $url" unless $self->{quiet};
+    $self->{logger}->("$method $url");
 
     my $scheme = $url->scheme // '';
     if ($self->{insecure}) {
@@ -48,13 +48,13 @@ sub request {
         $url->query_form(%$param);
     }
 
-    $self->show_request( $method, $url, $headers, $content );
+    $self->dump_request( $method, $url, $headers, $content );
     my $response = $self->{agent}->request( $method, $url, {
         headers => $headers,
         content => $content    
     } );
-    say "> " if $self->{verbose};
-    $self->show_response( $response );
+
+    $self->dump_response( $response );
    
     return $response if $response->{status} eq '599';
 
@@ -79,34 +79,35 @@ sub error {
     };
 }
 
-sub show_request {
+sub dump {
+    my ($self, $msg) = @_;
+    #  say ":$msg";
+    $self->{dumper}->($msg);
+}
+
+sub dump_request {
     my ($self, $method, $url, $headers, $content) = @_;
-    return unless $self->{verbose};
 
-    say "> $method " . $url->path_query . " HTTP/1.1";
-    say "> Host: " . $url->host;
-    $self->show_message( $headers, $content );
+    $self->dump("$method " . $url->path_query ." HTTP/1.1");
+    $self->dump("Host: " . $url->host);
+    $self->dump_message( $headers, $content );
 }
 
-sub show_response {
+sub dump_response {
     my ($self, $res) = @_;
-    return unless $self->{verbose};
 
-    printf "> %s %s\n", $res->{protocol}, $res->{status};
-    $self->show_message( $res->{headers}, $res->{content} );
+    $self->dump("\n" . $res->{protocol} . " " . $res->{status});
+    $self->dump_message( $res->{headers}, $res->{content} );
 }
 
-sub show_message {
+sub dump_message {
     my ($self, $headers, $content) = @_;
 
     while (my ($header, $value) = each %{$headers}) {
         $value = join ", ", @$value if ref $value;
-        say "> " . ucfirst($header) . ": $value";
+        $self->dump(ucfirst($header) . ": $value");
     }
-    if (defined $content) {
-        say "> ";
-        say "> $_" for split "\n", $content;
-    }
+    $self->dump("\n$content") if defined $content;
 }
 
 1;
@@ -124,13 +125,13 @@ expects to send JSON on HTTP POST and to receive JSON as response content.
 
 disables C<verfiy_SSL>.
 
-=item verbose
+=item logger
 
-enables output of request and response.
+method that HTTP method and URL are send to before each request.
 
-=item quiet
+=item dumper
 
-disables output of HTTP method and URL before each request.
+method that HTTP requests and responses are sent to.
 
 =back
 

@@ -20,7 +20,7 @@ sub _execute {
     if (defined $self->session->file) {
         $self->session;
         unlink $self->session->file;
-        $self->log("deleted session file");
+        $self->logger->("deleted session file");
     }
 
     return;

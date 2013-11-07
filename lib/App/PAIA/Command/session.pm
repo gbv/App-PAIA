@@ -20,7 +20,7 @@ sub _execute {
 
     if (defined $self->session->file ) {
         my $data = $self->session->load;
-        say encode_json($data) if $self->verbose;
+        say encode_json($data) if $self->app->global_options->verbose;
         my $msg = $self->not_authentificated;
         die "$msg.\n" if $msg;
         say "session looks fine.";
@@ -31,13 +31,13 @@ sub _execute {
     if (!$self->auth) {
         die "PAIA auth server URL not found\n";
     } else {
-        $self->log('auth URL: '.$self->auth);
+        $self->logger->('auth URL: '.$self->auth);
     }
 
     if (!$self->core) {
         die "PAIA core server URL not found\n";
     } else {
-        $self->log('core URL: '.$self->core);
+        $self->logger->('core URL: '.$self->core);
     }
 
     return;
