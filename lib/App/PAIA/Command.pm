@@ -191,10 +191,10 @@ sub login {
 
 our %required_scopes = (
     patron  => 'read_patron',
-    items   => 'read_item',
-    request => 'write_item',
-    renew   => 'write_item',
-    cancel  => 'write_item',
+    items   => 'read_items',
+    request => 'write_items',
+    renew   => 'write_items',
+    cancel  => 'write_items',
     fees    => 'read_fees',
     change  => 'change_password',
 );
