@@ -26,6 +26,24 @@ sub stdout_json {
 
 sub new_paia_test {
     chdir tempdir();
+
+    my %options = @_;
+    if ($options{http_request}) { # Mock HTTP(S) requests
+        require HTTP::Tiny;
+        no warnings;
+        *HTTP::Tiny::request = sub {
+            my ($self, $method, $url, $opts) = @_;
+            my $psgi = $options{http_request}->(
+                $method, $url, $opts->{headers}, $opts->{content}
+            );
+            return {
+                protocol => 'HTTP/1.1',
+                status   => $psgi->[0],
+                headers  => { $psgi->[1] },
+                content  => join "", @{$psgi->[2]},
+            }
+        };
+    }
 }
 
 sub paia(@) { ## no critic

@@ -1,5 +1,8 @@
 Revision history for Perl module App::PAIA
 
+0.??    2013-??-??
+  - improved unit tests
+
 0.21    2013-11-07
   - fixed scopes read_items & write_items
   - improved error handling

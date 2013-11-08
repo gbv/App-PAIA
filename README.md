@@ -20,7 +20,7 @@ Use your favorite CPAN installer to install the CPAN module
 [App::PAIA](https://metacpan.org/release/App-PAIA).
 
 With cpanminus ([installation described
-here](https://metacpan.org/pod/App::cpanminus#INSTALLATION) the
+here](https://metacpan.org/pod/App::cpanminus#INSTALLATION)) the
 client can be installed on command line with
 
     cpanm App::PAIA     # or 'sudo cpanm App::PAIA'

@@ -18,6 +18,4 @@ is error,
     "PAIA requires HTTPS unless insecure (got http://example.org/auth/login)\n";
 ok exit_code;
 
-debug;
-
 done_paia_test;
