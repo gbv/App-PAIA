@@ -2,25 +2,31 @@ use strict;
 use v5.10;
 use Test::More;
 use App::PAIA::Tester;
-use App::PAIA::JSON qw(encode_json);
 
-new_paia_test 
-    http_request => sub {
-        my ($method, $url, $headers, $content) = @_;
-        [ 403, [ 
-            'Content-type' => 'application/json; charset=UTF-8' 
-            ], [ encode_json {
-                error => 'access_denied',
-                code  => 403,
-                error_description => 'invalid patron or password'
-            } ]
-        ]
-    };
+new_paia_test mock_http => 1;
+paia_response 403, [ ], {
+    error => 'access_denied',
+    code  => 403,
+    error_description => 'invalid patron or password'
+};
 
 paia qw(login -b https://example.org -u alice -p 1234 -v);
 
 is output, "# POST https://example.org/auth/login\n";
 is error, "access_denied: invalid patron or password\n";
+ok exit_code;
+
+new_paia_test mock_http => 1;
+paia_response {
+    doc => [{ 
+        item  => "http://example.org/abc",
+        error => "item not found",
+    }]
+};
+
+# use explicit token, patron, and base URL
+paia qw(-b https://example.org/ -t 12345 -o alice request urn:isbn:9876);
+is error, "item not found\n";
 ok exit_code;
 
 done_paia_test;

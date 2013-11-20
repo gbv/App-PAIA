@@ -6,14 +6,16 @@ use v5.10;
 
 use parent 'Exporter';
 our @cmd = qw(stdout stderr output error exit_code);
-our @EXPORT = (qw(new_paia_test done_paia_test paia stdout_json debug), @cmd);
+our @EXPORT = (qw(new_paia_test paia_response done_paia_test paia stdout_json debug), @cmd);
 
 use Test::More;
 use App::Cmd::Tester;
-use JSON::PP;
 use File::Temp qw(tempdir);
 use Cwd;
 use App::PAIA;
+use JSON::PP;
+use Scalar::Util qw(reftype);
+use HTTP::Tiny;
 
 our $CWD = getcwd();
 our $RESULT;
@@ -24,25 +26,56 @@ sub stdout_json {
     decode_json($RESULT->stdout);
 }
 
-sub new_paia_test {
+our $HTTP_TINY_REQUEST = \&HTTP::Tiny::request;
+
+our $DEFAULT_PSGI = [ 500, [], ["no response faked yet"] ];
+our $PSGI_RESPONSE = $DEFAULT_PSGI;
+our $HTTP_REQUEST = sub { $PSGI_RESPONSE };
+
+sub mock_http {
+    my ($self, $method, $url, $opts) = @_;
+    my $psgi = $HTTP_REQUEST->(
+        $method, $url, $opts->{headers}, $opts->{content}
+    );
+    return {
+        protocol => 'HTTP/1.1',
+        status   => $psgi->[0],
+        headers  => { @{$psgi->[1]} },
+        content  => join "", @{$psgi->[2]},
+    };
+};
+
+sub new_paia_test(@) { ## no critic
+    my (%options) = @_;
+
     chdir tempdir();
 
-    my %options = @_;
-    if ($options{http_request}) { # Mock HTTP(S) requests
-        require HTTP::Tiny;
+    no warnings 'redefine';
+    if ($options{mock_http}) {
+        *HTTP::Tiny::request = \&mock_http;
+    } else {
         no warnings;
-        *HTTP::Tiny::request = sub {
-            my ($self, $method, $url, $opts) = @_;
-            my $psgi = $options{http_request}->(
-                $method, $url, $opts->{headers}, $opts->{content}
-            );
-            return {
-                protocol => 'HTTP/1.1',
-                status   => $psgi->[0],
-                headers  => { $psgi->[1] },
-                content  => join "", @{$psgi->[2]},
-            }
-        };
+        *HTTP::Tiny::request = $HTTP_TINY_REQUEST; 
+    }
+}
+
+sub paia_response(@) { ## no critic
+    $PSGI_RESPONSE = $DEFAULT_PSGI;
+    if (ref $_[0] and reftype $_[0]  eq 'ARRAY') {
+        $PSGI_RESPONSE = shift;
+    } else {
+        $PSGI_RESPONSE = $DEFAULT_PSGI;
+        $PSGI_RESPONSE->[0] = $_[0] =~ /^\d+/ ? shift : 200;
+        $PSGI_RESPONSE->[1] = shift if ref $_[0] and reftype $_[0] eq 'ARRAY' and @_ > 1;
+        my $content = shift;
+        if (reftype $content eq 'HASH') {
+            push @{$PSGI_RESPONSE->[1]}, 'Content-type', 'application/json; charset=UTF-8';
+            $PSGI_RESPONSE->[2] = [ encode_json($content) ];
+        } elsif (reftype $_[1] eq 'ARRAY') {
+            $PSGI_RESPONSE->[2] = $content;
+        } else {
+            $PSGI_RESPONSE->[2] = [$content];
+        }
     }
 }
 

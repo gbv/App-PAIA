@@ -57,7 +57,7 @@ has agent => (
 
 has logger => (
     default => sub {
-        $_[0]->app->global_options->verbose
+        ($_[0]->app->global_options->verbose || $_[0]->app->global_options->debug)
             ? sub { say "# $_" for split "\n", $_[0]; }
             : sub { };
     }
@@ -65,7 +65,7 @@ has logger => (
 
 has dumper => (
     default => sub {
-        $_[0]->app->global_options->full
+        $_[0]->app->global_options->debug
             ? sub { say "> $_" for split "\n", $_[0]; }
             : sub { };
     }
@@ -103,7 +103,9 @@ sub core {
 sub base { $_[0]->option('base') }
 
 # get patron identifier
-sub patron { $_[0]->option('patron') }
+sub patron { 
+    $_[0]->option('patron')
+}
 
 # get current scopes
 sub scope { $_[0]->option('scope') }
@@ -135,8 +137,8 @@ sub not_authentificated {
         }
     }
 
-    if ($scope and !$self->has_scope($scope)) {
-        return "current scope does not include $scope";
+    if ($scope and $self->scope and !$self->has_scope($scope)) {
+        return "current scope '{$self->scope}' does not include $scope!\n";
     }
 
     return;
@@ -227,13 +229,13 @@ sub auto_login_for {
 
     my $scope = $required_scopes{$command};
 
-    if ($self->not_authentificated( $scope )) {
+    if ( $self->not_authentificated($scope) ) {
         # add to existing scopes (TODO: only if wanted)
         my $new_scope = join ' ', split(' ',$self->scope // ''), $scope;
         $self->logger->("auto-login with scope '$new_scope'");
         $self->login( $new_scope );
         if ( $self->scope and !$self->has_scope($scope) ) {
-            die "current scope does not include $scope!\n";
+            die "current scope '{$self->scope}' does not include $scope!\n";
         }
     }
 }
@@ -257,7 +259,17 @@ sub core_request {
         # TODO: could we save new expiry as well? 
     }
 
-    $self->request( $method => $url, $params );
+    my $json = $self->request( $method => $url, $params );
+
+    if ($json->{doc}) {
+        # TODO: more details about failed documents
+        my @errors = map { $_->{error} if defined $_->{error} } @{$json->{doc}};
+        if (@errors) {
+            die join("\n", @errors)."\n";;
+        }
+    }
+
+    return $json;
 }
 
 # used in command::renew and ::cancel

@@ -1,7 +1,10 @@
 Revision history for Perl module App::PAIA
 
-0.??    2013-??-??
+0.22    2013-11-20
   - improved unit tests
+  - show document errors
+  - support explicit patron identifier at command line
+  - renamed option --full to --debug and imply --verbose
 
 0.21    2013-11-07
   - fixed scopes read_items & write_items
