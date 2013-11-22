@@ -25,6 +25,10 @@ client can be installed on command line with
 
     cpanm App::PAIA     # or 'sudo cpanm App::PAIA'
 
+To avoid SSL errors one should also install common certificates:
+
+    cpanm Mozilla::CA
+
 ### Prebuild packages
 
 Software packages for Debian and other Linux systems are not available yet.

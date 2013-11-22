@@ -34,13 +34,16 @@ Run C<paia help> or C<perldoc paia> for more commands and options.
 
 =head1 DESCRIPTION
 
-The Patrons Account Information API (PAIA) is a HTTP based API to access
-library patron information, such as loans, reservations, and fees. This client
-can be used to access PAIA servers via command line.
+The L<Patrons Account Information API (PAIA)|http://gbv.github.io/paia/> is a
+HTTP based API to access library patron information, such as loans,
+reservations, and fees. This client can be used to access PAIA servers via
+command line.
 
 =head1 USAGE
 
 See the documentation of of L<paia> command.
+
+To avoid SSL errors install L<Mozilla::CA> or use option C<--insecure>.
 
 =head1 IMPLEMENTATION
 
