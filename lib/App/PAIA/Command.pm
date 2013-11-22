@@ -263,7 +263,7 @@ sub core_request {
 
     if ($json->{doc}) {
         # TODO: more details about failed documents
-        my @errors = map { $_->{error} if defined $_->{error} } @{$json->{doc}};
+        my @errors = grep { defined $_ } map { $_->{error} } @{$json->{doc}};
         if (@errors) {
             die join("\n", @errors)."\n";;
         }

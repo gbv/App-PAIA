@@ -29,4 +29,16 @@ paia qw(-b https://example.org/ -t 12345 -o alice request urn:isbn:9876);
 is error, "item not found\n";
 ok exit_code;
 
+# print items
+my $items = {
+    doc => [{ 
+        item  => "http://example.org/abc",
+        status => "2",
+    }]
+};
+paia_response $items;
+paia qw(-b https://example.org/ -t 12345 -o alice items);
+is_deeply decode_json(stdout), $items, 'items'; 
+ok !exit_code;
+
 done_paia_test;

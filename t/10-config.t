@@ -33,7 +33,7 @@ paia qw(config base --verbose);
 is stdout, "# loaded config file paia.json\nhttp://example.org/\n", "get config value";
 
 paia qw(config);
-is_deeply stdout_json, { 
+is_deeply decode_json(stdout), { 
     base => 'http://example.org/',
     foo => 'bar',
 }, "get full config";
