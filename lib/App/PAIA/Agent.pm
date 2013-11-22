@@ -4,7 +4,7 @@ use strict;
 use v5.10;
 #VERSION
 
-use HTTP::Tiny 0.025;
+use HTTP::Tiny 0.024;
 use URI;
 use App::PAIA::JSON;
 
