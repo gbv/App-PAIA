@@ -22,7 +22,7 @@ sub new {
 }
 
 sub file {
-    $_[0]->{file};
+    @_ > 1 ? ($_[0]->{file} = $_[1]) : $_[0]->{file};
 }
 
 sub get {
@@ -71,6 +71,13 @@ sub store {
     close $fh;
 
     $self->{logger}->("saved $type file $file");
+}
+
+sub purge {
+    my ($self) = @_;
+
+    return unless defined $self->file && -e $self->file;
+    unlink $self->file;
 }
 
 1;

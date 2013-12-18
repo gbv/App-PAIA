@@ -17,7 +17,7 @@ sub global_opt_spec {
     ['quiet|q'      => "don't print PAIA response"],
     ["username|u=s" => "username for login"],
     ["password|p=s" => "password for login"],
-    ['token|t=s'    => "explicit access_token"],
+    ['access_token|token|t=s' => "explicit access_token"],
     ["patron|o=s"   => "explicit patron identifier"],
     ["scope|e=s"    => "comma-separated list of scopes for login"],
     ["help|h|?"     => "show help", { shortcircuit => 1 } ],

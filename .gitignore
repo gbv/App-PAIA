@@ -1,5 +1,4 @@
 *.bak
-paia-session.json
-paia.json
+*.json
 .build
 App-PAIA-*

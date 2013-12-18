@@ -11,6 +11,8 @@ use App::PAIA::File;
 use URI::Escape;
 use URI;
 
+# TODO: move option handling to App::PAIA
+
 # Implements lazy accessors just like Mo, Moo, Moose...
 sub has {
     my ($name, %options) = @_;
@@ -39,14 +41,6 @@ sub explicit_option {
     my ($self, $name) = @_;
     $self->app->global_options->{$name} # command line
         // $self->config->get($name);   # config file
-}
-
-sub token { # TODO: make option
-    my ($self) = @_;
-
-    $self->app->global_options->{'token'}
-        // $self->session->get('access_token') 
-        // $self->config->get('access_token');
 }
 
 has config => ( 
@@ -109,15 +103,19 @@ has core => (
 
 has base => (
     default => sub { $_[0]->option('base') },
-    coerce  => sub { my ($b) = @_; $b =~ s!/$!!; $b; },
+    coerce  => sub { my ($b) = @_; $b =~ s!/$!!; $b; }
 );
 
 has patron => (
-    default => sub { $_[0]->option('patron') },
+    default => sub { $_[0]->option('patron') }
 );
 
 has scope => (
-    default => sub { $_[0]->option('scope') },
+    default => sub { $_[0]->option('scope') }
+);
+
+has token => (
+    default => sub { $_[0]->option('access_token') }
 );
 
 has username => (
@@ -132,16 +130,19 @@ has password => (
     }
 );
 
+sub expired {
+    my ($self) = @_;
+
+    my $expires = $self->session->get('expires_at');
+    return $expires ? $expires <= time : 0;
+}
+
 sub not_authentificated {
     my ($self, $scope) = @_;
 
     my $token = $self->token // return "missing access token";
 
-    if ( my $expires = $self->session->get('expires_at') ) {
-        if ($expires <= time) {
-            return "access token expired";
-        }
-    }
+    return "access token expired" if $self->expired;
 
     if ($scope and $self->scope and !$self->has_scope($scope)) {
         return "current scope '{$self->scope}' does not include $scope!\n";
@@ -190,6 +191,11 @@ sub request {
 
 sub login {
     my ($self, $scope) = @_;
+
+    if ($self->session->purge) {
+        $self->session->file(undef);
+        $self->logger->("deleted session file");
+    }
 
     my $auth = $self->auth or $self->usage_error("missing PAIA auth server URL");
 
