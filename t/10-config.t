@@ -49,4 +49,13 @@ is output, '', 'unset config value';
 paia qw(config foo);
 is exit_code, 1, "config value not found";
 
+# override base with command line option
+
+paia qw(login -u alice -p 1234 -b http://example.com/ -v);
+
+is output, <<OUT;
+# loaded config file paia.json
+# POST http://example.com/auth/login
+OUT
+
 done_paia_test;

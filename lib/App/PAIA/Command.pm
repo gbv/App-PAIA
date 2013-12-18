@@ -14,15 +14,39 @@ use URI;
 # Implements lazy accessors just like Mo, Moo, Moose...
 sub has {
     my ($name, %options) = @_;
+    my $coerce  = $options{coerce} || sub { $_[0] };
     my $default = $options{default};
     no strict 'refs'; ## no critic 
     *{__PACKAGE__."::$name"} = sub {
-        @_ > 1 
-            ? $_[0]->{$name} = $_[1]
-            : (!exists $_[0]->{$name} && $default)
-                ? $_[0]->{$name} = $default->($_[0])
-                : $_[0]->{$name}
+        if (@_ > 1) {
+            $_[0]->{$name} = $coerce->($_[1]);
+        } elsif (!exists $_[0]->{$name} && $default) {
+            $_[0]->{$name} = $coerce->($default->($_[0]));
+        } else {
+            $_[0]->{$name}
+        }
     }
+}
+
+sub option { 
+    my ($self, $name) = @_;
+    $self->app->global_options->{$name} # command line 
+        // $self->session->get($name)   # session file
+        // $self->config->get($name);   # config file
+}
+
+sub explicit_option {
+    my ($self, $name) = @_;
+    $self->app->global_options->{$name} # command line
+        // $self->config->get($name);   # config file
+}
+
+sub token { # TODO: make option
+    my ($self) = @_;
+
+    $self->app->global_options->{'token'}
+        // $self->session->get('access_token') 
+        // $self->config->get('access_token');
 }
 
 has config => ( 
@@ -71,60 +95,42 @@ has dumper => (
     }
 );
 
-sub option { 
-    my ($self, $name) = @_;
-    $self->app->global_options->{$name} # command line 
-        // $self->session->get($name)   # session file
-        // $self->config->get($name);   # config file
-}
+has auth => (
+    default => sub {
+        $_[0]->option('auth') // ( $_[0]->base ? $_[0]->base . '/auth' : undef )
+    }
+);
 
-sub explicit_option {
-    my ($self, $name) = @_;
-    $self->app->global_options->{$name} # command line
-        // $self->config->get($name);   # config file
-}
+has core => (
+    default => sub {
+        $_[0]->option('core') // ( $_[0]->base ? $_[0]->base . '/core' : undef )
+    }
+);
 
-# get auth URL
-sub auth { 
-    my ($self) = @_;
-    $_[0]->option('auth') // ( $self->base ? $self->base . '/auth' : undef );
-}
+has base => (
+    default => sub { $_[0]->option('base') },
+    coerce  => sub { my ($b) = @_; $b =~ s!/$!!; $b; },
+);
 
-# get core URL
-sub core {
-    my ($self) = @_;
-    $_[0]->option('core') // ( $self->base ? $self->base . '/core' : undef );
-}
+has patron => (
+    default => sub { $_[0]->option('patron') },
+);
 
-#has_option 'base';
-#has_option 'patron';
+has scope => (
+    default => sub { $_[0]->option('scope') },
+);
 
-# get base URL
-sub base { $_[0]->option('base') }
+has username => (
+    default => sub {
+        $_[0]->explicit_option('username') // $_[0]->usage_error("missing username")
+    }
+);
 
-# get patron identifier
-sub patron { 
-    $_[0]->option('patron')
-}
-
-# get current scopes
-sub scope { $_[0]->option('scope') }
-
-sub username {
-    $_[0]->explicit_option('username') // $_[0]->usage_error("missing username");
-}
-
-sub password {
-    $_[0]->explicit_option('password') // $_[0]->usage_error("missing password");
-}
-
-sub token {
-    my ($self) = @_;
-
-    $self->app->global_options->{'token'}
-        // $self->session->get('access_token') 
-        // $self->config->get('access_token');
-}
+has password => (
+    default => sub {
+        $_[0]->explicit_option('password') // $_[0]->usage_error("missing password")
+    }
+);
 
 sub not_authentificated {
     my ($self, $scope) = @_;

@@ -1,3 +1,5 @@
+requires 'perl', '5.10.0';
+
 requires 'App::Cmd', '0.322';        # CLI framework
 requires 'URI', '1.59';
 requires 'JSON::PP', '2.27103';      # core module since Perl v5.13.9
