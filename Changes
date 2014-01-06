@@ -1,5 +1,14 @@
 Revision history for Perl module App::PAIA
 
+0.25    2014-01-06
+  - fix test failure with Pod::Simple 3.28 on Perl >= 5.18
+
+0.24    2013-12-18
+  - ignore existing session on login/logout
+
+0.23    2013-11-22
+  - print items in JSON
+
 0.22    2013-11-20
   - improved unit tests
   - show document errors

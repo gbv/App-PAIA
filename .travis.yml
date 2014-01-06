@@ -7,13 +7,6 @@ perl:
     - "5.12"
     - "5.10"
 
-# I don't know why travis builds fail at Pod/Simple/BlackBox.pm line 380
-matrix:
-    allow_failures:
-        perl:
-            - "5.19"
-            - "5.18"
-
 before_install:
     - git config --global user.name "TravisCI"
     - git config user.email 'travis@nowhere.dne'
