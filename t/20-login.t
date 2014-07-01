@@ -6,7 +6,6 @@ use App::PAIA::Tester;
 new_paia_test;
 
 paia qw(config base http://example.org);
-
 paia qw(login -u alice -p 1234 -v);
 
 is output, <<OUT;
@@ -14,8 +13,7 @@ is output, <<OUT;
 # POST http://example.org/auth/login
 OUT
 
-is error,
-    "PAIA requires HTTPS unless insecure (got http://example.org/auth/login)\n";
+is error, "PAIA requires HTTPS unless insecure (got http://example.org/auth/login)\n";
 ok exit_code;
 
 done_paia_test;

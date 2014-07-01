@@ -220,7 +220,7 @@ sub login {
     $self->session->set( auth => $auth );
     $self->session->set( core => $self->core ) if defined $self->core;
 
-    $self->session->store;
+    $self->store_session;
     
     return $response;
 }
@@ -252,6 +252,20 @@ sub auto_login_for {
     }
 }
 
+sub store_session {
+    my ($self) = @_;
+
+    $self->session->store;
+
+    $self->token($self->session->get('access_token'))
+        if defined $self->session->get('access_token');
+    $self->scope($self->session->get('scope'))
+        if defined $self->session->get('scope');
+    $self->patron($self->session->get('patron'))
+        if defined $self->session->get('patron');
+    # TODO: expires_at?
+}
+
 sub core_request {
     my ($self, $method, $command, $params) = @_;
 
@@ -267,7 +281,7 @@ sub core_request {
     # save PAIA core URL in session
     if ( ($self->session->get('core') // '') ne $core ) {
         $self->session->set( core => $core );
-        $self->session->store;
+        $self->store_session;
         # TODO: could we save new expiry as well? 
     }
 
