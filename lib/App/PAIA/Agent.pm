@@ -24,7 +24,8 @@ sub request {
     my $url     = URI->new(shift) // '';
     my $param   = shift // {};
     my $headers = { 
-        Accept => 'application/json',
+        Accept       => 'application/json',
+        'User-Agent' => "App::PAIA/".($VERSION//'?'),
         @_ 
     };
     my $content;
