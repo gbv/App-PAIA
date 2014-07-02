@@ -30,17 +30,16 @@ sub has {
     }
 }
 
-sub option { 
-    my ($self, $name) = @_;
-    $self->app->global_options->{$name} # command line 
-        // $self->session->get($name)   # session file
-        // $self->config->get($name);   # config file
-}
-
 sub explicit_option {
     my ($self, $name) = @_;
     $self->app->global_options->{$name} # command line
         // $self->config->get($name);   # config file
+}
+
+sub preferred_option {
+    my ($self, $name) = @_;
+    $self->explicit_option($name)  # command line or config file
+    // $self->session->get($name); # session file
 }
 
 has config => ( 
@@ -66,7 +65,7 @@ has session => (
 has agent => (
     default => sub {
         App::PAIA::Agent->new(
-            insecure => $_[0]->option('insecure'),
+            insecure => $_[0]->preferred_option('insecure'),
             logger   => $_[0]->logger,
             dumper   => $_[0]->dumper,
         );
@@ -91,31 +90,37 @@ has dumper => (
 
 has auth => (
     default => sub {
-        $_[0]->option('auth') // ( $_[0]->base ? $_[0]->base . '/auth' : undef )
+        my ($base) = map { s{/$}{}; $_ } ($_[0]->preferred_option('base') // '');
+        $_[0]->explicit_option('auth') 
+        // ($base ? "$base/auth" : undef)
+        // $_[0]->session->get('auth');
     }
 );
 
 has core => (
     default => sub {
-        $_[0]->option('core') // ( $_[0]->base ? $_[0]->base . '/core' : undef )
+        my ($base) = map { s{/$}{}; $_ } ($_[0]->preferred_option('base') // '');
+        $_[0]->explicit_option('core') 
+        // ($base ? "$base/core" : undef)
+        // $_[0]->session->get('core');
     }
 );
 
 has base => (
-    default => sub { $_[0]->option('base') },
+    default => sub { $_[0]->preferred_option('base') },
     coerce  => sub { my ($b) = @_; $b =~ s!/$!!; $b; }
 );
 
 has patron => (
-    default => sub { $_[0]->option('patron') }
+    default => sub { $_[0]->preferred_option('patron') }
 );
 
 has scope => (
-    default => sub { $_[0]->option('scope') }
+    default => sub { $_[0]->preferred_option('scope') }
 );
 
 has token => (
-    default => sub { $_[0]->option('access_token') }
+    default => sub { $_[0]->preferred_option('access_token') }
 );
 
 has username => (

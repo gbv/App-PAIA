@@ -26,18 +26,20 @@ is output, <<OUT, 'auto-login with session';
 # GET https://example.org/core/8362432
 OUT
 
-# config file overrides session ?
 paia qw(session);
 is output, "session looks fine.\n", "session looks fine";
 
-paia qw(config -c test.json base http://example.com/paia);
-paia qw(config -c test.json);
-is output, <<OUT, 'config';
-{
-   "base" : "http://example.com/paia"
-}
+paia qw(patron -b https://example.com/ -v -q);
+is output, <<OUT, 'command line arguments override session file';
+# loaded session file paia-session.json
+# saved session file paia-session.json
+# GET https://example.com/core/8362432
 OUT
 
-# TODO: config or session ?
+paia qw(config -c test.json base http://example.com/paia);
+paia qw(config -c test.json);
+my $output = output;
+$output =~ s/[\n\t ]+//gm;
+is $output, '{"base":"http://example.com/paia"}', 'config';
 
 done_paia_test;
