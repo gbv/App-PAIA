@@ -1,9 +1,7 @@
-#ABSTRACT: show help
 package App::PAIA::Command::help;
 use strict;
 use v5.10;
 use parent 'App::Cmd::Command::help';
-#VERSION
 
 sub execute {
     my ($self, $opts, $args) = @_;

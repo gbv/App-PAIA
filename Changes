@@ -1,5 +1,8 @@
 Revision history for Perl module App::PAIA
 
+{{$NEXT}}
+  - migrate to Dist::Milla
+
 0.25    2014-01-06
   - fix test failure with Pod::Simple 3.28 on Perl >= 5.18
 

@@ -2,6 +2,12 @@
 
 App::PAIA - Patrons Account Information API command line client
 
+# STATUS
+
+[![Build Status](https://travis-ci.org/gbv/App-PAIA.png)](https://travis-ci.org/gbv/App-PAIA)
+[![Coverage Status](https://coveralls.io/repos/gbv/App-PAIA/badge.png?branch=master)](https://coveralls.io/r/gbv/App-PAIA?branch=master)
+[![Kwalitee Score](http://cpants.cpanauthors.org/dist/App-PAIA.png)](http://cpants.cpanauthors.org/dist/App-PAIA)
+
 # SYNOPSIS
 
     paia patron --base http://example.org/ --username alice --password 12345
@@ -39,7 +45,7 @@ in the App::PAIA::Command:: namespace and common functionality implemented in
 
 # COPYRIGHT AND LICENSE
 
-Copyright Jakob Voß, 2014-
+Copyright Jakob Voß, 2013-
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.

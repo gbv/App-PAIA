@@ -27,6 +27,6 @@ __END__
 
 =head1 NAME
 
-App::PAIA::Command:: - cancel requests
+App::PAIA::Command::cancel - cancel requests
 
 =cut
