@@ -1,8 +1,6 @@
-#ABSTRACT: Utility functions to encode/decode JSON
 package App::PAIA::JSON;
 use strict;
 use v5.10;
-#VERSION
 
 use parent 'Exporter';
 our @EXPORT = qw(decode_json encode_json);
@@ -26,6 +24,11 @@ sub encode_json {
 }
 
 1;
+__END__
+
+=head1 NAME
+
+App::PAIA::JSON - utility functions to encode/decode JSON
 
 =head1 DESCRIPTION
 

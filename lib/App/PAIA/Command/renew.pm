@@ -1,9 +1,7 @@
-#ABSTRACT: Renew one or more documents held by a patron
 package App::PAIA::Command::renew;
 use strict;
 use v5.10;
 use parent 'App::PAIA::Command';
-#VERSION
 
 sub description {
     "Renews documents given by their item's (default) or edition's URI."
@@ -25,3 +23,10 @@ sub _execute {
 }
 
 1;
+__END__
+
+=head1 NAME
+
+App::PAIA::Command::renew - renew one or more documents held by a patron
+
+=cut

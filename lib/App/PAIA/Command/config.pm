@@ -1,9 +1,7 @@
-#ABSTRACT: show or modify configuration
 package App::PAIA::Command::config;
 use strict;
 use v5.10;
 use parent 'App::PAIA::Command';
-#VERSION
 
 use App::PAIA::JSON;
 
@@ -65,3 +63,10 @@ sub _execute {
 }
 
 1;
+__END__
+
+=head1 NAME
+
+App::PAIA::Command::config - show or modify configuration
+
+=cut

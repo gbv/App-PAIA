@@ -1,8 +1,6 @@
-#ABSTRACT: Facilitate PAIA client unit tests
 package App::PAIA::Tester;
 use strict;
 use v5.10;
-#VERSION
 
 use parent 'Exporter';
 our @cmd = qw(stdout stderr output error exit_code);
@@ -96,6 +94,13 @@ sub debug {
     );
 }
 
+1;
+__END__
+
+=head1 NAME
+
+App::PAIA::Tester - facilitate PAIA client testing
+
 =head1 SYNOPSIS
 
     use Test::More;
@@ -123,8 +128,6 @@ sub debug {
 =head1 DESCRIPTION
 
 The module implements a simple a singleton wrapper around L<App::Cmd::Tester>
-to facilitate writing unit tests for the paia client L<App::PAIA>. 
+to facilitate writing tests for and with the paia client L<App::PAIA>. 
 
 =cut
-
-1;

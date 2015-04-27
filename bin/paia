@@ -1,10 +1,19 @@
 #!/usr/bin/env perl
-##no critic
-#ABSTRACT: Patrons Account Information API command line client 
-#PODNAME: paia
-#VERSION
+our $VERSION = '0.27';
 use App::PAIA;
 App::PAIA->run;
+
+__END__
+
+=encoding UTF-8
+
+=head1 NAME
+
+paia - Patrons Account Information API command line client 
+
+=head1 VERSION
+
+version 0.27
 
 =head1 SYNOPSIS
 
@@ -126,5 +135,12 @@ PAIA specification
 Perl module used to implement this client
 
 =back
+
+=head1 COPYRIGHT AND LICENSE
+
+Copyright Jakob Voß, 2014-
+
+This is free software; you can redistribute it and/or modify it under
+the same terms as the Perl 5 programming language system itself.
 
 =cut

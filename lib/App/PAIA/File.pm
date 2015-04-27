@@ -1,8 +1,6 @@
-#ABSTRACT: Utility class to read and write JSON files
 package App::PAIA::File;
 use strict;
 use v5.10;
-#VERSION
 
 use App::PAIA::JSON;
 
@@ -81,10 +79,15 @@ sub purge {
 }
 
 1;
+__END__
+
+=head1 NAME
+
+App::PAIA::File - utility class to read and write JSON files
 
 =head1 DESCRIPTION
 
-This module implements an internal utility class to load and store config and
-session files in JSON format.
+This module implements an internal utility class to load and store config
+files (C<paia.json>) and session files (C<paia-session.json>) in JSON format.
 
 =cut

@@ -1,3 +1,0 @@
-#!/bin/sh
-# shortcut to call local instance of paia CLI
-perl -Ilib bin/paia $@ 

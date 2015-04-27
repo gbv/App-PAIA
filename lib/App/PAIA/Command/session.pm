@@ -1,9 +1,7 @@
-#ABSTRACT: show current session status
 package App::PAIA::Command::session;
 use strict;
 use v5.10;
 use parent 'App::PAIA::Command';
-#VERSION
 
 use App::PAIA::JSON;
 
@@ -44,3 +42,10 @@ sub _execute {
 }
 
 1;
+__END__
+
+=head1 NAME
+
+App::PAIA::Command::session - show current session status
+
+=cut

@@ -1,9 +1,7 @@
-#ABSTRACT: invalidate an access token
 package App::PAIA::Command::logout;
 use strict;
 use v5.10;
 use parent 'App::PAIA::Command';
-#VERSION
 
 use App::PAIA::JSON;
 
@@ -26,3 +24,10 @@ sub _execute {
 }
 
 1;
+__END__
+
+=head1 NAME
+
+App::PAIA::Command::logout - invalidate an access token
+
+=cut

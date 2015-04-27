@@ -1,9 +1,7 @@
-#ABSTRACT: cancel requests
 package App::PAIA::Command::cancel;
 use strict;
 use v5.10;
 use parent 'App::PAIA::Command';
-#VERSION
 
 sub description {
     "Cancels requests given by their item's (default) or edition's URI."
@@ -25,3 +23,10 @@ sub _execute {
 }
 
 1;
+__END__
+
+=head1 NAME
+
+App::PAIA::Command:: - cancel requests
+
+=cut

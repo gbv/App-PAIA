@@ -1,9 +1,9 @@
-#ABSTRACT: Patrons Account Information API command line client
 package App::PAIA;
 use strict;
 use v5.10;
 use parent 'App::Cmd';
-#VERSION
+
+our $VERSION = '0.27';
 
 sub global_opt_spec {
     ['base|b=s'     => "base URL of PAIA server"],
@@ -25,6 +25,13 @@ sub global_opt_spec {
 }
 
 1;
+__END__
+
+=encoding UTF-8
+
+=head1 NAME
+
+App::PAIA - Patrons Account Information API command line client
 
 =head1 SYNOPSIS
 
@@ -64,5 +71,12 @@ PAIA specification
 Code repository and issue tracker
 
 =back
+
+=head1 COPYRIGHT AND LICENSE
+
+Copyright Jakob Voß, 2014-
+
+This is free software; you can redistribute it and/or modify it under
+the same terms as the Perl 5 programming language system itself.
 
 =cut

@@ -1,9 +1,7 @@
-#ABSTRACT: request one or more items for reservation or delivery
 package App::PAIA::Command::request;
 use strict;
 use v5.10;
 use parent 'App::PAIA::Command';
-#VERSION
 
 sub usage_desc {
     "%c request %o URI [item=URI] [edition=URI] ..."
@@ -22,3 +20,10 @@ sub execute {
 }
 
 1;
+__END__
+
+=head1 NAME
+
+App::PAIA::Command::request - request one or more items for reservation or delivery
+
+=cut

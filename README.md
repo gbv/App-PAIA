@@ -1,56 +1,45 @@
-This repository contains an experimental command line client for the **[Patrons
-Account Information API (PAIA)](http://gbv.github.io/paia)**. The client is
-implemented in Perl (at least version 5.10) and installed as
-[`paia`](https://metacpan.org/pod/paia).
+# NAME
 
-Releases are [available at CPAN](https://metacpan.org/release/App-PAIA). The
-latest version is in a git repository at <https://github.com/gbv/App-PAIA>. Bug
-reports and feature requests can be raised at
-<https://github.com/gbv/App-PAIA/issues>.
+App::PAIA - Patrons Account Information API command line client
 
-## Usage
+# SYNOPSIS
 
-Call `perldoc paia` or `paia help` for usage description.
+    paia patron --base http://example.org/ --username alice --password 12345
 
-## Installation
+Run `paia help` or `perldoc paia` for more commands and options.
 
-### From CPAN
+# DESCRIPTION
 
-Use your favorite CPAN installer to install the CPAN module
-[App::PAIA](https://metacpan.org/release/App-PAIA).
+The [Patrons Account Information API (PAIA)](http://gbv.github.io/paia/) is a
+HTTP based API to access library patron information, such as loans,
+reservations, and fees. This client can be used to access PAIA servers via
+command line.
 
-With cpanminus ([installation described
-here](https://metacpan.org/pod/App::cpanminus#INSTALLATION)) the
-client can be installed on command line with
+# USAGE
 
-    cpanm App::PAIA     # or 'sudo cpanm App::PAIA'
+See the documentation of of [paia](https://metacpan.org/pod/paia) command.
 
-To avoid SSL errors one should also install common certificates:
+To avoid SSL errors install [Mozilla::CA](https://metacpan.org/pod/Mozilla::CA) or use option `--insecure`.
 
-    cpanm Mozilla::CA
+# IMPLEMENTATION
 
-### Prebuild packages
+The client is implemented using [App::Cmd](https://metacpan.org/pod/App::Cmd). There is a module for each command
+in the App::PAIA::Command:: namespace and common functionality implemented in
+[App::PAIA::Command](https://metacpan.org/pod/App::PAIA::Command).
 
-Software packages for Debian and other Linux systems are not available yet.
+# RESOURCES
 
-### Build and install from scratch
+- [http://gbv.github.io/paia/](http://gbv.github.io/paia/)
 
-The client is automatically tested on [Travis CI](https://travis-ci.org), so
-the following should always work on a fresh system with Perl >= 5.14 and
-[cpanminus](http://search.cpan.org/perldoc?App::cpanminus):
+    PAIA specification
 
-    cpanm --quiet --notest --skip-satisfied Dist::Zilla Pod::Weaver::Plugin::Encoding
-    dzil authordeps | grep -vP '[^\w:]' | xargs -n 5 -P 10 cpanm --quiet --notest --skip-satisfied
-    dzil listdeps | grep -vP '[^\w:]' | cpanm --notest
-    dzil install
+- [https://github.com/gbv/App-PAIA](https://github.com/gbv/App-PAIA)
 
-## Code status
+    Code repository and issue tracker
 
-Status of the latest revision (including unreleased revisions):
+# COPYRIGHT AND LICENSE
 
-[![Build Status](https://travis-ci.org/gbv/App-PAIA.png)](https://travis-ci.org/gbv/App-PAIA)
-[![Coverage Status](https://coveralls.io/repos/gbv/App-PAIA/badge.png)](https://coveralls.io/r/gbv/App-PAIA)
+Copyright Jakob Voß, 2014-
 
-Code kwalitee indicators of the [latest release](https://metacpan.org/release/App-PAIA):
-
-[![Kwalitee indicators](http://cpants.cpanauthors.org/dist/App-PAIA.png)](http://cpants.cpanauthors.org/dist/App-PAIA)
+This is free software; you can redistribute it and/or modify it under
+the same terms as the Perl 5 programming language system itself.

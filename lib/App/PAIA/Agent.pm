@@ -1,8 +1,6 @@
-#ABSTRACT: HTTP client wrapper
 package App::PAIA::Agent;
 use strict;
 use v5.10;
-#VERSION
 
 use HTTP::Tiny 0.024;
 use URI;
@@ -25,7 +23,7 @@ sub request {
     my $param   = shift // {};
     my $headers = { 
         Accept       => 'application/json',
-        'User-Agent' => "App::PAIA/".($VERSION//'?'),
+        'User-Agent' => "App::PAIA/".($APP::PAIA::VERSION//'?'),
         @_ 
     };
     my $content;
@@ -112,6 +110,11 @@ sub dump_message {
 }
 
 1;
+__END__
+
+=head1 NAME
+
+App::PAIA::Agent - HTTP client wrapper
 
 =head1 DESCRIPTION
 

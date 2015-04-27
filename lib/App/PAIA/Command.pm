@@ -1,9 +1,7 @@
-#ABSTRACT: common base class of PAIA client commands
 package App::PAIA::Command;
 use strict;
 use v5.10;
 use App::Cmd::Setup -command;
-#VERSION
 
 use App::PAIA::Agent;
 use App::PAIA::JSON;
@@ -334,3 +332,14 @@ sub execute {
 }
 
 1;
+__END__
+
+=head1 NAME
+
+App::PAIA::Command - common base class of PAIA client commands
+
+=head1 SEE ALSO
+
+L<App::Cmd::Setup>
+
+=cut

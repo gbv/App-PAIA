@@ -1,9 +1,7 @@
-#ABSTRACT: list loans, reservations and other items related to a patron
 package App::PAIA::Command::items;
 use strict;
 use v5.10;
 use parent 'App::PAIA::Command';
-#VERSION
 
 use App::PAIA::JSON;
 
@@ -14,3 +12,10 @@ sub _execute {
 }
 
 1;
+__END__
+
+=head1 NAME
+
+App::PAIA::Command::items - list loans, reservations and other items related to a patron
+
+=cut

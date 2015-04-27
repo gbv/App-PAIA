@@ -1,9 +1,7 @@
-#ABSTRACT: get general patron information
 package App::PAIA::Command::patron;
 use strict;
 use v5.10;
 use parent 'App::PAIA::Command';
-#VERSION
 
 sub _execute {
     my ($self, $opt, $args) = @_;
@@ -12,3 +10,10 @@ sub _execute {
 }
 
 1;
+__END__
+
+=head1 NAME
+
+App::PAIA::Command::patron - get general patron information
+
+=cut
