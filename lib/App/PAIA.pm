@@ -3,7 +3,7 @@ use strict;
 use v5.10;
 use parent 'App::Cmd';
 
-our $VERSION = '0.27';
+our $VERSION = '0.28';
 
 sub global_opt_spec {
     ['base|b=s'     => "base URL of PAIA server"],
@@ -38,7 +38,7 @@ App::PAIA - Patrons Account Information API command line client
 # STATUS
 
 [![Build Status](https://travis-ci.org/gbv/App-PAIA.png)](https://travis-ci.org/gbv/App-PAIA)
-[![Coverage Status](https://coveralls.io/repos/gbv/App-PAIA/badge.png?branch=master)](https://coveralls.io/r/gbv/App-PAIA?branch=master)
+[![Coverage Status](https://coveralls.io/repos/gbv/App-PAIA/badge.svg?branch=master)](https://coveralls.io/r/gbv/App-PAIA?branch=master)
 [![Kwalitee Score](http://cpants.cpanauthors.org/dist/App-PAIA.png)](http://cpants.cpanauthors.org/dist/App-PAIA)
 
 =end markdown

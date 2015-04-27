@@ -5,7 +5,7 @@ App::PAIA - Patrons Account Information API command line client
 # STATUS
 
 [![Build Status](https://travis-ci.org/gbv/App-PAIA.png)](https://travis-ci.org/gbv/App-PAIA)
-[![Coverage Status](https://coveralls.io/repos/gbv/App-PAIA/badge.png?branch=master)](https://coveralls.io/r/gbv/App-PAIA?branch=master)
+[![Coverage Status](https://coveralls.io/repos/gbv/App-PAIA/badge.svg?branch=master)](https://coveralls.io/r/gbv/App-PAIA?branch=master)
 [![Kwalitee Score](http://cpants.cpanauthors.org/dist/App-PAIA.png)](http://cpants.cpanauthors.org/dist/App-PAIA)
 
 # SYNOPSIS
