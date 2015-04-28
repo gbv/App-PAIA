@@ -2,7 +2,7 @@ package App::PAIA::Command;
 use strict;
 use v5.10;
 
-our $VERSION = '0.29';
+our $VERSION = '0.30';
 
 use App::Cmd::Setup -command;
 use App::PAIA::Agent;

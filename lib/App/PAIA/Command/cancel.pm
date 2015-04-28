@@ -2,7 +2,7 @@ package App::PAIA::Command::cancel;
 use strict;
 use v5.10;
 
-our $VERSION = '0.29';
+our $VERSION = '0.30';
 
 use parent 'App::PAIA::Command';
 

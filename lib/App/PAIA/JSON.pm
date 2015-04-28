@@ -2,7 +2,7 @@ package App::PAIA::JSON;
 use strict;
 use v5.10;
 
-our $VERSION = '0.29';
+our $VERSION = '0.30';
 
 use parent 'Exporter';
 our @EXPORT = qw(decode_json encode_json);

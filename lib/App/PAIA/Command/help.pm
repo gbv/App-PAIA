@@ -3,7 +3,7 @@ use strict;
 use v5.10;
 use parent 'App::Cmd::Command::help';
 
-our $VERSION = '0.29';
+our $VERSION = '0.30';
 
 sub execute {
     my ($self, $opts, $args) = @_;

@@ -2,7 +2,7 @@ package App::PAIA;
 use strict;
 use App::Cmd::Setup -app;
 
-our $VERSION = '0.29';
+our $VERSION = '0.30';
 
 sub global_opt_spec {
     ['base|b=s'     => "base URL of PAIA server"],
