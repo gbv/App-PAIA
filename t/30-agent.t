@@ -3,7 +3,7 @@ use v5.10;
 use Test::More;
 use App::PAIA::Tester;
 
-new_paia_test mock_http => 1;
+new_paia_test;
 paia_response 403, [ ], {
     error => 'access_denied',
     code  => 403,
@@ -16,7 +16,7 @@ is output, "# POST https://example.org/auth/login\n";
 is error, "access_denied: invalid patron or password\n";
 ok exit_code;
 
-new_paia_test mock_http => 1;
+new_paia_test;
 paia_response {
     doc => [{ 
         item  => "http://example.org/abc",
@@ -38,7 +38,7 @@ my $items = {
 };
 paia_response $items;
 paia qw(-b https://example.org/ -t 12345 -o alice items);
-is_deeply decode_json(stdout), $items, 'items'; 
+is_deeply stdout_json, $items, 'items'; 
 ok !exit_code;
 
 done_paia_test;

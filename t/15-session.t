@@ -3,7 +3,7 @@ use v5.10;
 use Test::More;
 use App::PAIA::Tester;
 
-new_paia_test mock_http => 1;
+new_paia_test;
 
 # no session
 paia 'session';

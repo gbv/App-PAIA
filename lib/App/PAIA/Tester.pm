@@ -2,28 +2,40 @@ package App::PAIA::Tester;
 use strict;
 use v5.10;
 
-our $VERSION = '0.29';
+our $VERSION = '0.30';
 
 use parent 'Exporter';
-our @cmd = qw(stdout stderr output error exit_code);
-our @EXPORT = (
-    qw(new_paia_test paia_response done_paia_test paia debug), 
-    qw(decode_json encode_json),
-    @cmd);
+our @EXPORT = (qw(
+    new_paia_test done_paia_test paia_response paia_live
+    paia PAIA debug
+    stdout stderr output error exit_code
+    stdout_json stderr_json output_json error exit_code
+    ));
 
 use Test::More;
 use App::Cmd::Tester;
 use File::Temp qw(tempdir);
 use Cwd;
 use App::PAIA;
-use JSON::PP;
+use JSON::PP qw(encode_json);
 use Scalar::Util qw(reftype);
 use HTTP::Tiny;
 
 our $CWD = getcwd();
 our $RESULT;
 
-eval "sub $_ { \$RESULT->$_ }" for @cmd; ## no critic
+sub decode_json {
+    my $json = shift;
+    $json =~ s/^#.*$//mg;
+    JSON::PP::decode_json($json)
+}
+
+sub stdout_json() { decode_json($RESULT->stdout) }
+sub stderr_json() { decode_json($RESULT->stderr) }
+sub output_json() { decode_json($RESULT->output) }
+
+## no critic
+eval "sub $_() { \$RESULT->$_ }" for qw(stdout stderr output error exit_code);
 
 our $HTTP_TINY_REQUEST = \&HTTP::Tiny::request;
 
@@ -44,18 +56,14 @@ sub mock_http {
     };
 };
 
+sub paia_live() {
+    no warnings;
+    *HTTP::Tiny::request = $HTTP_TINY_REQUEST; 
+}
+
 sub new_paia_test(@) { ## no critic
-    my (%options) = @_;
-
-    chdir tempdir();
-
-    no warnings 'redefine';
-    if ($options{mock_http}) {
-        *HTTP::Tiny::request = \&mock_http;
-    } else {
-        no warnings;
-        *HTTP::Tiny::request = $HTTP_TINY_REQUEST; 
-    }
+    chdir tempdir;
+    paia_live;
 }
 
 sub paia_response(@) { ## no critic
@@ -76,13 +84,22 @@ sub paia_response(@) { ## no critic
             $PSGI_RESPONSE->[2] = [$content];
         }
     }
+
+    no warnings;
+    *HTTP::Tiny::request = \&mock_http;
 }
 
 sub paia(@) { ## no critic
     $RESULT = test_app('App::PAIA' => [@_]);
 }
 
-sub done_paia_test {
+sub PAIA($) { ## no critic
+    my @args = split /\s+/, shift;
+    say join ' ', '# paia', @args;
+    paia(@args);
+}
+
+sub done_paia_test() {
     chdir $CWD;
     done_testing;
 }
@@ -101,7 +118,7 @@ __END__
 
 =head1 NAME
 
-App::PAIA::Tester - facilitate PAIA client testing
+App::PAIA::Tester - facilitate PAIA testing
 
 =head1 SYNOPSIS
 
@@ -110,7 +127,12 @@ App::PAIA::Tester - facilitate PAIA client testing
 
     new_paia_test;
 
+    # call with list
     paia qw(config base http://example.org/);
+
+    # call with string and print call
+    PAIA "config base http://example.org/";
+    
     is error, undef;
 
     paia qw(config);
@@ -124,6 +146,7 @@ App::PAIA::Tester - facilitate PAIA client testing
 
     my $token = stdout_json->{access_token};
     ok $token;
+    note "token: $token";
 
     done_paia_test;
 
@@ -131,5 +154,73 @@ App::PAIA::Tester - facilitate PAIA client testing
 
 The module implements a simple a singleton wrapper around L<App::Cmd::Tester>
 to facilitate writing tests for and with the paia client L<App::PAIA>. 
+
+=head1 FUNCTIONS
+
+=over
+
+=item C<paia>
+
+Execute L<paia> with arguments given as list.
+
+=item C<PAIA>
+
+Execute L<paia> with arguments given as string and print the call before
+execution.
+
+=item C<new_paia_test>
+
+Start a new test by changing into a new empty temporary directory and enabling
+C<paia_live>.
+
+=item C<done_paia_test> 
+
+Finish testing and print a summary.
+
+=item C<paia_response>
+
+Set a mocked HTTP result to return for all following paia requests.
+
+=item C<paia_live>
+
+Disable HTTP request mocking.
+
+=item C<stdout>
+
+Return the output sent to STDOUT by last paia execution.
+
+=item C<stderr>
+
+Return the output sent to STDERR by last paia execution.
+
+=item C<stderr>
+
+Return the combined output sent to STDOUT and STDERR by last paia execution.
+
+=item C<stdout_json>
+
+Decode C<stdout>, stripping lines starting with C<#>, as JSON.
+
+=item C<stderr_json>
+
+Decode C<stderr>, stripping lines starting with C<#>, as JSON.
+
+=item C<output_json>
+
+Decode C<output>, stripping lines starting with C<#>, as JSON.
+
+=item C<exit_code>
+
+Return the exit code of last paia execution (C<0> on success).
+
+=item C<error>
+
+Return the exception thrown by last paia execution.
+
+=item C<debug>
+
+Print C<stdout>, C<stderr>, C<error>, and C<exit_code>.
+
+=back
 
 =cut

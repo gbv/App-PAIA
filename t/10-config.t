@@ -3,8 +3,6 @@ use v5.10;
 use Test::More;
 use App::PAIA::Tester;
 
-# start with an empty directory
-
 new_paia_test;
 
 paia 'config';
@@ -33,7 +31,7 @@ paia qw(config base --verbose);
 is stdout, "# loaded config file paia.json\nhttp://example.org/\n", "get config value";
 
 paia qw(config);
-is_deeply decode_json(stdout), { 
+is_deeply stdout_json, { 
     base => 'http://example.org/',
     foo => 'bar',
 }, "get full config";
