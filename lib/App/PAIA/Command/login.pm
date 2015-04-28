@@ -8,7 +8,11 @@ our $VERSION = '0.29';
 sub _execute {
     my ($self, $opt, $args) = @_;
 
-    $self->login( $self->explicit_option('scope') );
+    # don't take scope from session
+    my $scope = $self->app->global_options->{scope} # command line
+                // $self->config->get('scope');     # config file
+
+    $self->login( $scope );
 }
 
 1;

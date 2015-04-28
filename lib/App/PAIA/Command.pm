@@ -30,16 +30,11 @@ sub has {
     }
 }
 
-sub explicit_option {
+sub option {
     my ($self, $name) = @_;
     $self->app->global_options->{$name} # command line
-        // $self->config->get($name);   # config file
-}
-
-sub preferred_option {
-    my ($self, $name) = @_;
-    $self->explicit_option($name)  # command line or config file
-    // $self->session->get($name); # session file
+        // $self->config->get($name)    # config file
+        // $self->session->get($name); # session file
 }
 
 has config => ( 
@@ -65,7 +60,7 @@ has session => (
 has agent => (
     default => sub {
         App::PAIA::Agent->new(
-            insecure => $_[0]->preferred_option('insecure'),
+            insecure => $_[0]->option('insecure'),
             logger   => $_[0]->logger,
             dumper   => $_[0]->dumper,
         );
@@ -88,50 +83,75 @@ has dumper => (
     }
 );
 
+sub base_url {
+    my ($self, $name) = @_;
+   
+    # command line
+    if ( defined $self->app->global_options->{$name} ) {
+        return $self->app->global_options->{$name}; 
+    }
+
+    my $base = $self->app->global_options->{base};
+    if (defined $base) {
+        $base =~ s{/$}{}; 
+        return "$base/$name";
+    }
+
+    # session file or config file
+    foreach ( $self->session, $self->config ) {
+        if ( defined $_->get($name) ) {
+            return $_->get($name);
+        }
+    }
+    
+    # config file with base
+    if ( defined $self->config->get('base') ) {
+        my $base = $self->config->get('base');
+        $base =~ s{/$}{}; 
+        return $base . "/$name";
+    }
+
+    return;
+}
+
 has auth => (
     default => sub {
-        my ($base) = map { s{/$}{}; $_ } ($_[0]->preferred_option('base') // '');
-        $_[0]->explicit_option('auth') 
-        // ($base ? "$base/auth" : undef)
-        // $_[0]->session->get('auth');
+        $_[0]->base_url('auth');
     }
 );
 
 has core => (
     default => sub {
-        my ($base) = map { s{/$}{}; $_ } ($_[0]->preferred_option('base') // '');
-        $_[0]->explicit_option('core') 
-        // ($base ? "$base/core" : undef)
-        // $_[0]->session->get('core');
+        $_[0]->base_url('core');
     }
 );
 
 has base => (
-    default => sub { $_[0]->preferred_option('base') },
+    default => sub { $_[0]->option('base') },
     coerce  => sub { my ($b) = @_; $b =~ s!/$!!; $b; }
 );
 
 has patron => (
-    default => sub { $_[0]->preferred_option('patron') }
+    default => sub { $_[0]->option('patron') }
 );
 
 has scope => (
-    default => sub { $_[0]->preferred_option('scope') }
+    default => sub { $_[0]->option('scope') }
 );
 
 has token => (
-    default => sub { $_[0]->preferred_option('access_token') }
+    default => sub { $_[0]->option('access_token') }
 );
 
 has username => (
     default => sub {
-        $_[0]->explicit_option('username') // $_[0]->usage_error("missing username")
+        $_[0]->option('username') // $_[0]->usage_error("missing username")
     }
 );
 
 has password => (
     default => sub {
-        $_[0]->explicit_option('password') // $_[0]->usage_error("missing password")
+        $_[0]->option('password') // $_[0]->usage_error("missing password")
     }
 );
 

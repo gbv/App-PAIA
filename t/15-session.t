@@ -29,8 +29,16 @@ OUT
 paia qw(session);
 is output, "session looks fine.\n", "session looks fine";
 
+paia qw(config base http://example.com/paia);
+paia qw(session -v);
+is_deeply [ (output =~ /^# .... URL: .+/mg) ],
+    [ '# auth URL: https://example.org/auth',
+      '# core URL: https://example.org/core' ],
+    'session overrides config file';
+
 paia qw(patron -b https://example.com/ -v -q);
 is output, <<OUT, 'command line arguments override session file';
+# loaded config file paia.json
 # loaded session file paia-session.json
 # saved session file paia-session.json
 # GET https://example.com/core/8362432

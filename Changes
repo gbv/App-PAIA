@@ -1,6 +1,7 @@
 Revision history for Perl module App::PAIA
 
 {{$NEXT}}
+  - take base URL from session if available (issue #10)
 
 0.28  2015-04-27 21:30:19 CEST
   - migrate to Dist::Milla
