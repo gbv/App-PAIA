@@ -3,9 +3,7 @@ use strict;
 use v5.10;
 use parent 'App::PAIA::Command';
 
-sub description {
-    "requests or renews an access_token from a PAIA auth server."
-}
+our $VERSION = '0.29';
 
 sub _execute {
     my ($self, $opt, $args) = @_;
@@ -14,10 +12,13 @@ sub _execute {
 }
 
 1;
-__END__
 
 =head1 NAME
 
 App::PAIA::Command::login - get a access token and patron identifier
+
+=head1 DESCRIPTION
+
+requests or renews an access_token from a PAIA auth server
 
 =cut

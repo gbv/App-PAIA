@@ -3,14 +3,9 @@ use strict;
 use v5.10;
 use parent 'App::PAIA::Command';
 
-use App::PAIA::JSON;
+our $VERSION = '0.29';
 
-sub description {
-<<MSG
-This command shows or modifies the current configuration. Configuration
-is printed as JSON object or in INI-sytle as sorted key-value-pairs.
-MSG
-}
+use App::PAIA::JSON;
 
 sub usage_desc {
     "%c config %o [ key [value] ]"
@@ -68,5 +63,10 @@ __END__
 =head1 NAME
 
 App::PAIA::Command::config - show or modify configuration
+
+=head1 DESCRIPTION
+
+This command shows or modifies the current configuration. Configuration
+is printed as JSON object or in INI-sytle as sorted key-value-pairs.
 
 =cut

@@ -3,15 +3,9 @@ use strict;
 use v5.10;
 use parent 'App::PAIA::Command';
 
-use App::PAIA::JSON;
+our $VERSION = '0.29';
 
-sub description {
-<<MSG
-This command shows the current PAIA auth session.
-The exit code indicates whether a session file was found with not-expired
-access token and PAIA server URLs. Options --verbose|-v enables details.
-MSG
-}
+use App::PAIA::JSON;
 
 sub _execute {
     my ($self, $opt, $args) = @_;
@@ -47,5 +41,11 @@ __END__
 =head1 NAME
 
 App::PAIA::Command::session - show current session status
+
+=head1 DESCRIPTION
+
+This command shows the current PAIA auth session.  The exit code indicates
+whether a session file was found with not-expired access token and PAIA server
+URLs. Option --verbose|-v enables details.
 
 =cut

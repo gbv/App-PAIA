@@ -3,6 +3,8 @@ use strict;
 use v5.10;
 use parent 'App::PAIA::Command';
 
+our $VERSION = '0.29';
+
 sub usage_desc {
     "%c request %o URI [item=URI] [edition=URI] ..."
     # storage not supported yet

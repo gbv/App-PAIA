@@ -1,8 +1,10 @@
 package App::PAIA::Command;
 use strict;
 use v5.10;
-use App::Cmd::Setup -command;
 
+our $VERSION = '0.29';
+
+use App::Cmd::Setup -command;
 use App::PAIA::Agent;
 use App::PAIA::JSON;
 use App::PAIA::File;
@@ -313,7 +315,37 @@ sub uri_list {
     } @_;
 }
 
+# TODO:
+
+sub description {
+    my ($class) = @_;
+    $class = ref $class if ref $class;
+
+    # classname to filename
+    (my $pm_file = $class) =~ s!::!/!g;
+    $pm_file .= '.pm';
+    $pm_file = $INC{$pm_file} or return '';
+    
+    open my $input, "<", $pm_file or return '';
+
+    my $descr = "";
+    open my $output, ">", \$descr;
+
+    use Pod::Usage;
+    pod2usage( -input => $input,
+               -output => $output, 
+               -exit => "NOEXIT", -verbose => 99, 
+               -sections => "DESCRIPTION",
+               indent => 0,
+    );           
+    $descr =~ s/Description:\n//m;
+    chomp $descr;
+
+    return $descr;
+}
+
 # TODO: Think about making this part of App::Cmd
+#       see https://github.com/rjbs/App-Cmd/issues/30
 sub execute {
     my $self = shift;
 
@@ -321,8 +353,8 @@ sub execute {
         $self->app->execute_command( $self->app->prepare_command('version') );
         exit;
     } elsif ($self->app->global_options->help) {
-       $self->app->execute_command( $self->app->prepare_command('help', @ARGV) );
-        exit;
+#        $self->app->execute_command( $self->app->prepare_command('help', @ARGV) );
+#        exit;
     }
 
     my $response = $self->_execute(@_);

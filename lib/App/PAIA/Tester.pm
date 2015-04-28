@@ -2,6 +2,8 @@ package App::PAIA::Tester;
 use strict;
 use v5.10;
 
+our $VERSION = '0.29';
+
 use parent 'Exporter';
 our @cmd = qw(stdout stderr output error exit_code);
 our @EXPORT = (

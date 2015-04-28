@@ -2,6 +2,8 @@ package App::PAIA::Agent;
 use strict;
 use v5.10;
 
+our $VERSION = '0.29';
+
 use HTTP::Tiny 0.024;
 use URI;
 use App::PAIA::JSON;

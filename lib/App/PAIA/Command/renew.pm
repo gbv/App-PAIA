@@ -3,9 +3,7 @@ use strict;
 use v5.10;
 use parent 'App::PAIA::Command';
 
-sub description {
-    "Renews documents given by their item's (default) or edition's URI."
-}
+our $VERSION = '0.29';
 
 sub usage_desc {
     "%c renew %o URI [item=URI] [edition=URI] ..."
@@ -28,5 +26,9 @@ __END__
 =head1 NAME
 
 App::PAIA::Command::renew - renew one or more documents held by a patron
+
+=head1 DESCRIPTION
+
+Renews documents given by their item's (default) or edition's URI.
 
 =cut

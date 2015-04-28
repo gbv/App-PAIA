@@ -2,6 +2,8 @@ package App::PAIA::File;
 use strict;
 use v5.10;
 
+our $VERSION = '0.29';
+
 use App::PAIA::JSON;
 
 our %DEFAULT = (
