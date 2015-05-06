@@ -41,7 +41,9 @@ in the App::PAIA::Command:: namespace and common functionality implemented in
 
 - [https://github.com/gbv/App-PAIA](https://github.com/gbv/App-PAIA)
 
-    Code repository and issue tracker
+    Code repository, issue tracker, and releases.
+
+    The repository also contains a `debian` branch for Debian packaging.
 
 # COPYRIGHT AND LICENSE
 

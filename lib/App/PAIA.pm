@@ -2,7 +2,7 @@ package App::PAIA;
 use strict;
 use App::Cmd::Setup -app;
 
-our $VERSION = '0.30';
+our $VERSION = '0.31';
 
 sub global_opt_spec {
     ['base|b=s'     => "base URL of PAIA server"],
@@ -77,7 +77,9 @@ PAIA specification
 
 =item L<https://github.com/gbv/App-PAIA>
 
-Code repository and issue tracker
+Code repository, issue tracker, and releases.
+
+The repository also contains a C<debian> branch for Debian packaging.
 
 =back
 
