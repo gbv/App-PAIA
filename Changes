@@ -1,6 +1,7 @@
 Revision history for Perl module App::PAIA
 
 {{$NEXT}}
+  - renamed bin directory for easier Debian packaging
 
 0.30  2015-04-28 14:31:56 CEST
   - improved App::PAIA::Tester
