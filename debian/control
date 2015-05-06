@@ -1,0 +1,29 @@
+Source: paia
+Maintainer: Jakob Voß <jakob.voss@gbv.de>
+Section: perl
+Priority: optional
+Build-Depends: debhelper (>= 9),
+               libmodule-build-tiny-perl (>= 0.034)
+Build-Depends-Indep: perl (>= 5.10),
+                     libapp-cmd-perl (>= 0.322),
+                     liburi-perl (>= 1.59),
+                     libjson-pp-perl (>= 2.27103),
+                     libhttp-tiny-perl (>= 0.024),
+                     libio-socket-ssl-perl (>= 1.56),
+                     libnet-ssleay-perl (>= 1.49)
+Standards-Version: 3.9.5
+Homepage: https://metacpan.org/release/App-PAIA
+Testsuite: autopkgtest-pkg-perl
+
+Package: paia
+Architecture: all
+Depends: ${misc:Depends},
+         ${perl:Depends},
+         liburi-perl,
+         libjson-pp-perl,
+         libhttp-tiny-perl,
+         libapp-cmd-perl,
+         libio-socket-ssl-perl,
+         libnet-ssleay-perl
+Description: Patrons Account Availability API (PAIA) command line client
+ Command line client to access PAIA auth and PAIA core servers
